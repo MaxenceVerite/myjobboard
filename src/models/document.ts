@@ -8,7 +8,6 @@ export  interface Document {
 
 
 export enum DocumentType{
-CV,
-LETTRE_MOTIVATION,
-
+CV = "CV",
+LETTRE_MOTIVATION = "LETTRE_MOTIVATION",
 }

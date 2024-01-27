@@ -17,11 +17,11 @@ import {
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
-import ContactPageIcon from '@mui/icons-material/ContactPage';
+import ContactPageIcon from "@mui/icons-material/ContactPage";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
-import ContactMailIcon from '@mui/icons-material/ContactMail';
-import UploadFileIcon from '@mui/icons-material/UploadFile';
+import ContactMailIcon from "@mui/icons-material/ContactMail";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
 import DocumentListItem from "../components/documents/DocumentListItem";
 
 import { styled } from "@mui/material/styles";
@@ -95,46 +95,54 @@ const DocumentPage = () => {
         <Typography variant="h4" gutterBottom>
           Mes documents
         </Typography>
-        {/* Tabs or quick navigation could go here */}
       </Box>
 
       <Grid container spacing={3}>
-        {/* Section for latest documents */}
-        <Grid item xs={12}>
-          <Item>
-            <Typography variant="h6" gutterBottom>
-              Mes derniers documents
-            </Typography>
-            <List>
-              {lastDocuments.map((doc) => (
-                <DocumentListItem 
-                key={doc.id} 
-                doc={doc} 
-                onDownload={handleDownload}
-                onDelete={handleDelete}
-                onView={handleView}
-                />
-              ))}
-            </List>
-          </Item>
-        </Grid>
-
+        {lastDocuments.length > 0 && (
+          <Grid item xs={12}>
+            <Item>
+              <Typography variant="h6" gutterBottom>
+                Mes derniers documents
+              </Typography>
+              <List>
+                {lastDocuments.map((doc) => (
+                  <DocumentListItem
+                    key={doc.id}
+                    doc={doc}
+                    onDownload={handleDownload}
+                    onDelete={handleDelete}
+                    onView={handleView}
+                  />
+                ))}
+              </List>
+            </Item>
+          </Grid>
+        )}
         <Grid item xs={12}>
           <Item>
             <Typography variant="h6" gutterBottom>
               Mes CV
             </Typography>
-            <List>
-              {cvs.map((doc) => (
-                <DocumentListItem 
-                key={doc.id} 
-                doc={doc} 
-                onDownload={handleDownload}
-                onDelete={handleDelete}
-                onView={handleView}
-                />
-              ))}
-            </List>
+            {cvs && cvs.length > 0 ? (
+              <List>
+                {cvs.map((doc) => (
+                  <DocumentListItem
+                    key={doc.id}
+                    doc={doc}
+                    onDownload={handleDownload}
+                    onDelete={handleDelete}
+                    onView={handleView}
+                  />
+                ))}
+              </List>
+            ) : (
+              <Item elevation={0}>
+                
+                <Typography gutterBottom>
+                  Aucun CV téléversé(s) pour le moment ...
+                </Typography>
+              </Item>
+            )}
             <Button startIcon={<CloudUploadIcon />} component="label">
               Ajouter un nouveau CV
               <input type="file" hidden onChange={handleUpload} />
@@ -147,23 +155,29 @@ const DocumentPage = () => {
             <Typography variant="h6" gutterBottom>
               Mes lettres de motivation
             </Typography>
-
+          {motivationLetters && motivationLetters.length > 0 ?(
             <List>
               {motivationLetters.map((doc) => (
-                <DocumentListItem 
-                key={doc.id} 
-                doc={doc} 
-                onDownload={handleDownload}
-                onDelete={handleDelete}
-                onView={handleView}
+                <DocumentListItem
+                  key={doc.id}
+                  doc={doc}
+                  onDownload={handleDownload}
+                  onDelete={handleDelete}
+                  onView={handleView}
                 />
               ))}
             </List>
-
-            <Divider />
-            <IconButton color="primary" aria-label="add document">
-              <AddCircleOutlineIcon />
-            </IconButton>
+            )
+            :(<Item elevation={0}>
+                
+                <Typography gutterBottom>
+                  Aucune lettre(s) de motivation téléversée(s) pour le moment ...
+                </Typography>
+              </Item>)}
+            <Button startIcon={<CloudUploadIcon />} component="label">
+              Ajouter une lettre de motivation
+              <input type="file" hidden onChange={handleUpload} />
+            </Button>
           </Item>
         </Grid>
       </Grid>
