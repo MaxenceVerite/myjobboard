@@ -1,7 +1,11 @@
 import { DocumentType } from "../../../../models/document"
 import myJobBoardClient from "../../apiclient";
 import { Document } from "../../../../models/document";
-const getDocumentsEndpointPath = "/documents";
+
+const documentsRessourcePath = "/documents"
+const getDocumentsEndpointPath = documentsRessourcePath;
+const uploadDocumentEndpointPath = `${documentsRessourcePath}/upload`
+const downloadDocumentEndpointPath = `${documentsRessourcePath}/download`
 
 interface DocumentFilter{
     userId?: string,
@@ -29,9 +33,32 @@ const getDocuments = async (filter: DocumentFilter): Promise<Document[]> => {
     }
 };
 
+const uploadDocument = async(file:File,  type: DocumentType, customName: string|undefined): Promise<string> => {
+    const formData = new FormData();
+        formData.append('file', file);
+        formData.append('documentType', type);
+
+        if(customName)
+            formData.append('customName', customName);
+        
+    
+        try {
+            const response = await myJobBoardClient.post(uploadDocumentEndpointPath, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            return response.data.documentId;
+        } catch (error) {
+            console.error("Erreur lors de l'upload du document", error);
+            throw error;
+        }
+}
+
 
 
 
 export {
-    getDocuments
+    getDocuments,
+    uploadDocument
 }

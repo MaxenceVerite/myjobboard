@@ -28,9 +28,10 @@ import { styled } from "@mui/material/styles";
 import {
   fetchMotivationLetters,
   fetchCVs,
+  uploadDocument
 } from "../store/slices/documentSlice";
 import { RootState, AppDispatch } from "../store/store";
-import { Document } from "../models/document";
+import { Document, DocumentType } from "../models/document";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -69,9 +70,21 @@ const DocumentPage = () => {
     );
   }, [cvs, motivationLetters]);
 
-  // Upload handler (to be implemented)
-  const handleUpload = (event) => {
-    // Logic for handling document upload
+
+  const getFileDataFromUploadEvent = (event) => {
+    return event.target.files[0];
+  }
+
+  const handleUploadCV = (event) => {
+    
+    var file = getFileDataFromUploadEvent(event)
+    dispatch(uploadDocument({file: file, type:DocumentType.CV}))
+  };
+
+
+  const handleUploadMotivationLetter = (event) => {
+    var file = getFileDataFromUploadEvent(event)
+    dispatch(uploadDocument({file: file, type:DocumentType.LETTRE_MOTIVATION}))
   };
 
   // Delete handler (to be implemented)
@@ -145,7 +158,7 @@ const DocumentPage = () => {
             )}
             <Button startIcon={<CloudUploadIcon />} component="label">
               Ajouter un nouveau CV
-              <input type="file" hidden onChange={handleUpload} />
+              <input type="file" hidden onChange={handleUploadCV} />
             </Button>
           </Item>
         </Grid>
@@ -176,7 +189,7 @@ const DocumentPage = () => {
               </Item>)}
             <Button startIcon={<CloudUploadIcon />} component="label">
               Ajouter une lettre de motivation
-              <input type="file" hidden onChange={handleUpload} />
+              <input type="file" hidden onChange={handleUploadMotivationLetter} />
             </Button>
           </Item>
         </Grid>

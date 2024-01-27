@@ -42,6 +42,26 @@ export const fetchMotivationLetters = createAsyncThunk(
   }
 );
 
+interface UploadDocumentPayload {
+  type: DocumentType;
+  file: File; 
+  customName?: string;
+}
+
+
+// Créer un thunk asynchrone pour récupérer les lettres de motivation
+export const uploadDocument = createAsyncThunk(
+  'documents/uploadDocument',
+  async (payload: UploadDocumentPayload, { rejectWithValue }) => {
+    try {
+      const uploadedDocumentId = await documentService.uploadDocument(payload.file, payload.type, payload.customName);
+      return uploadedDocumentId;
+    } catch (error) {
+      return rejectWithValue('Erreur lors de la récupération des lettres de motivation');
+    }
+  }
+);
+
 // Créer le slice pour les documents
 const documentSlice = createSlice({
   name: 'documents',
