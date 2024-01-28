@@ -55,10 +55,24 @@ const uploadDocument = async(file:File,  type: DocumentType, customName: string|
         }
 }
 
+const downloadDocument = async(documentId: string): Promise<void> => {
+    try {
+  
+        await myJobBoardClient.get(`${downloadDocumentEndpointPath}`, {
+            params: {id: documentId}
+        });
+
+    } catch (error) {
+        console.error("Erreur lors du téléchargement d'un document:", error);
+        throw error;
+    }
+}
+
 
 
 
 export {
     getDocuments,
-    uploadDocument
+    uploadDocument,
+    downloadDocument
 }

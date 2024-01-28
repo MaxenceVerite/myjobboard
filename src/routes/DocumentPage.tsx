@@ -28,7 +28,8 @@ import { styled } from "@mui/material/styles";
 import {
   fetchMotivationLetters,
   fetchCVs,
-  uploadDocument
+  uploadDocument,
+  downloadDocument
 } from "../store/slices/documentSlice";
 import { RootState, AppDispatch } from "../store/store";
 import { Document, DocumentType } from "../models/document";
@@ -87,19 +88,19 @@ const DocumentPage = () => {
     dispatch(uploadDocument({file: file, type:DocumentType.LETTRE_MOTIVATION}))
   };
 
-  // Delete handler (to be implemented)
+ 
   const handleDelete = (docId) => {
-    // Logic for handling document delete
+ 
   };
 
-  // Gestionnaire pour afficher un document (pourrait ouvrir un modal ou une nouvelle fenêtre)
+  
   const handleView = (doc: Document) => {
-    // Logique pour afficher le document
+
   };
 
-  // Gestionnaire pour télécharger un document
+  
   const handleDownload = (doc: Document) => {
-    // Logique pour télécharger le document
+    dispatch(downloadDocument({documentId: doc.id}))
   };
 
   return (

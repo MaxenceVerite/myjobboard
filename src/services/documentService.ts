@@ -1,7 +1,8 @@
 import { Document, DocumentType } from "../models/document";
 import {
   getDocuments as getDocumentsApi,
-  uploadDocument as uploadDocumentApi
+  uploadDocument as uploadDocumentApi,
+  downloadDocument as downloadDocumentApi
 } from "../api/myJobBoard/features/documents/documentsApi"
 
 
@@ -23,11 +24,15 @@ const uploadDocument = async (file:File, type: DocumentType, customName?: string
   return await uploadDocumentApi(file, type, customName);
 }
 
+const downloadDocument = async(documentId: string): Promise<void> => {
+  return await downloadDocumentApi(documentId);
+}
 
 
 export {
     getDocumentsHeaders,
     getDocumentById,
     getDocumentsByType,
-    uploadDocument
+    uploadDocument,
+    downloadDocument
 }

@@ -16,7 +16,7 @@ const initialState: DocumentState = {
   error: null,
 };
 
-// Créer un thunk asynchrone pour récupérer les CVs
+
 export const fetchCVs = createAsyncThunk(
   'documents/fetchCVs',
   async (_, { rejectWithValue }) => {
@@ -29,7 +29,6 @@ export const fetchCVs = createAsyncThunk(
   }
 );
 
-// Créer un thunk asynchrone pour récupérer les lettres de motivation
 export const fetchMotivationLetters = createAsyncThunk(
   'documents/fetchMotivationLetters',
   async (_, { rejectWithValue }) => {
@@ -49,7 +48,7 @@ interface UploadDocumentPayload {
 }
 
 
-// Créer un thunk asynchrone pour récupérer les lettres de motivation
+
 export const uploadDocument = createAsyncThunk(
   'documents/uploadDocument',
   async (payload: UploadDocumentPayload, { rejectWithValue }) => {
@@ -57,17 +56,32 @@ export const uploadDocument = createAsyncThunk(
       const uploadedDocumentId = await documentService.uploadDocument(payload.file, payload.type, payload.customName);
       return uploadedDocumentId;
     } catch (error) {
-      return rejectWithValue('Erreur lors de la récupération des lettres de motivation');
+      return rejectWithValue('Erreur lors du téléversement du document');
     }
   }
 );
 
-// Créer le slice pour les documents
+
+interface DownloadDocumentPayload {
+  documentId: string
+}
+
+export const downloadDocument = createAsyncThunk(
+  'documents/uploadDocument',
+  async (payload: DownloadDocumentPayload, { rejectWithValue }) => {
+    try {
+     await documentService.downloadDocument(payload.documentId);
+    } catch (error) {
+      return rejectWithValue('Erreur lors du téléchargement du document');
+    }
+  }
+);
+
+
 const documentSlice = createSlice({
   name: 'documents',
   initialState,
   reducers: {
-    // Vous pouvez ajouter ici des reducers synchrones si besoin
   },
   extraReducers: (builder) => {
     builder
@@ -97,10 +111,10 @@ const documentSlice = createSlice({
       // Traitement de l'état 'rejected' pour la récupération des lettres de motivation
       .addCase(fetchMotivationLetters.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload as string; // Cast le payload en string
+        state.error = action.payload as string; 
       });
   },
 });
 
-export const { /* ajouter ici les actions synchrones si besoin */ } = documentSlice.actions;
+export const {  } = documentSlice.actions;
 export default documentSlice.reducer;
