@@ -2,36 +2,44 @@
 import axios from 'axios';
 import config from '../config';
 import User from '../models/user'
+import { 
+  register as registerApi,
+  login as loginApi
+
+} from "../api/myJobBoard/authentication/authenticationApi"
+import Token from '../models/authentication/Token';
 
 interface LoginData {
-  username: string;
+  mail: string;
   password: string;
 }
 
-const login = async (data: LoginData): Promise<{user:User; token: string}> => {
+interface RegisterData {
+  mail: string;
+  password: string;
+  tel: string;
+}
+
+const login = async (data: LoginData): Promise<Token> => {
   try {
-    /*
-    const response = await axios.post(`${config.apiUrl}/login`, data);
-    if (response.data) {
-      localStorage.setItem('user', JSON.stringify(response.data)); 
-    }
-   
-    return response.data;
-     */
-    const mockedUser: User = {id: "1", name: "toto"};
-    if(data.username !== "test"  || data.password != "test" ) throw new Error("Invalid credentials");
-        localStorage.setItem('currentUser', JSON.stringify(mockedUser))
-    return {user:mockedUser, token: "abcd" };
+    const response = await loginApi(data.mail, data.password);
+
+    return response;
   } catch (error) {
     throw error;
   }
 };
 
-const logout = () => {
+const logout = async () => {
   localStorage.removeItem('user'); 
 };
+
+const register = async (registerData: RegisterData): Promise<void> => {
+    return await registerApi(registerData.mail, registerData.password);
+}
 
 export default {
   login,
   logout,
+  register
 };

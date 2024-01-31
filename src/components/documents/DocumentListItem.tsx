@@ -19,7 +19,7 @@ interface DocumentListItemProps {
   doc: Document;
   onDownload: (doc: Document) => void;
   onView: (doc: Document) => void;
-  onDelete: (docId: string) => void;
+  onDelete: (doc: Document) => void;
 }
 
 const DocumentListItem: React.FC<DocumentListItemProps> = ({
@@ -32,7 +32,7 @@ const DocumentListItem: React.FC<DocumentListItemProps> = ({
     switch(type) {
       case DocumentType.CV:
         return <ContactPageIcon />;
-      case DocumentType.LETTRE_MOTIVATION:
+      case DocumentType.MOTIVATION_LETTER:
         return <ContactMailIcon />;
       default:
         return <UploadFileIcon />;
@@ -46,7 +46,7 @@ const DocumentListItem: React.FC<DocumentListItemProps> = ({
       </ListItemIcon>
       <ListItemText
         primary={doc.name}
-        secondary={`Téléchargé le : ${doc.creationDate}`}
+        secondary={`Téléchargé le : ${doc.uploadedDate}`}
       />
       <IconButton
         edge="end"
@@ -65,7 +65,7 @@ const DocumentListItem: React.FC<DocumentListItemProps> = ({
       <IconButton
         edge="end"
         aria-label="delete"
-        onClick={() => onDelete(doc.id)}
+        onClick={() => onDelete(doc)}
       >
         <DeleteIcon />
       </IconButton>

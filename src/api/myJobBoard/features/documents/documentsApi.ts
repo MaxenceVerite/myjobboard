@@ -2,10 +2,10 @@ import { DocumentType } from "../../../../models/document"
 import myJobBoardClient from "../../apiclient";
 import { Document } from "../../../../models/document";
 
-const documentsRessourcePath = "/documents"
+const documentsRessourcePath = "api/documents"
 const getDocumentsEndpointPath = documentsRessourcePath;
 const uploadDocumentEndpointPath = `${documentsRessourcePath}/upload`
-const downloadDocumentEndpointPath = `${documentsRessourcePath}/download`
+const deleteDocumentEndpointPath = `${documentsRessourcePath}`
 
 interface DocumentFilter{
     userId?: string,
@@ -15,9 +15,9 @@ interface DocumentFilter{
 const getDocuments = async (filter: DocumentFilter): Promise<Document[]> => {
     try {
         const params: any = {};
-        if (filter.userId) {
-            params.userId = filter.userId;
-        }
+
+        params.userId = filter.userId ?? "toto";
+        
         if (filter.type) {
             params.type = filter.type;
         }
@@ -55,24 +55,35 @@ const uploadDocument = async(file:File,  type: DocumentType, customName: string|
         }
 }
 
-const downloadDocument = async(documentId: string): Promise<void> => {
+const downloadDocument = async(documentId: string): Promise<Blob> => {
     try {
-  
-        await myJobBoardClient.get(`${downloadDocumentEndpointPath}`, {
-            params: {id: documentId}
+        const response = await myJobBoardClient.get(`/documents/${documentId}/download`, {
+          responseType: 'blob'
         });
+        
+        return new Blob([response.data], { type: response.headers['content-type'] });
+      } catch (error) {
+        console.error('Erreur lors du téléchargement du document:', error);
+        throw error;
+      }
+}
+
+const deleteDocument = async(documentId: string) : Promise<void> => {
+    try {
+
+       return await myJobBoardClient.delete(`${deleteDocumentEndpointPath}/${documentId}`);
 
     } catch (error) {
-        console.error("Erreur lors du téléchargement d'un document:", error);
+        console.error("Erreur lors de la suppression d'un document:", error);
         throw error;
     }
 }
 
 
 
-
 export {
     getDocuments,
     uploadDocument,
-    downloadDocument
+    downloadDocument,
+    deleteDocument
 }

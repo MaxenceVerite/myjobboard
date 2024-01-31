@@ -33,7 +33,7 @@ export const fetchMotivationLetters = createAsyncThunk(
   'documents/fetchMotivationLetters',
   async (_, { rejectWithValue }) => {
     try {
-      const motivationLetters = await documentService.getDocumentsByType(DocumentType.LETTRE_MOTIVATION);
+      const motivationLetters = await documentService.getDocumentsByType(DocumentType.MOTIVATION_LETTER);
       return motivationLetters;
     } catch (error) {
       return rejectWithValue('Erreur lors de la récupération des lettres de motivation');
@@ -70,7 +70,22 @@ export const downloadDocument = createAsyncThunk(
   'documents/uploadDocument',
   async (payload: DownloadDocumentPayload, { rejectWithValue }) => {
     try {
-     await documentService.downloadDocument(payload.documentId);
+     return await documentService.downloadDocument(payload.documentId);
+    } catch (error) {
+      return rejectWithValue('Erreur lors du téléchargement du document');
+    }
+  }
+);
+
+interface DeleteDocumentPayload {
+  documentId: string
+}
+
+export const deleteDocument = createAsyncThunk(
+  'documents/deleteDocument',
+  async (payload: DeleteDocumentPayload, { rejectWithValue }) => {
+    try {
+     return await documentService.deleteDocument(payload.documentId);
     } catch (error) {
       return rejectWithValue('Erreur lors du téléchargement du document');
     }
@@ -112,6 +127,9 @@ const documentSlice = createSlice({
       .addCase(fetchMotivationLetters.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string; 
+      });
+      builder.addCase(downloadDocument.fulfilled, (state, action) => {
+       
       });
   },
 });

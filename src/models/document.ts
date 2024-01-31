@@ -3,11 +3,11 @@ export  interface Document {
     type: DocumentType
     path: string,
     name: string,
-    creationDate: string
+    uploadedDate: string
 }
 
 
 export enum DocumentType{
 CV = "CV",
-LETTRE_MOTIVATION = "LETTRE_MOTIVATION",
+MOTIVATION_LETTER = "MOTIVATION_LETTER",
 }

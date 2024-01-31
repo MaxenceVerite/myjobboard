@@ -2,6 +2,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import authService from '../../services/authService';
 import User from '../../models/user';
+import Token from '../../models/authentication/Token';
 
 
 export interface AuthState {
@@ -19,7 +20,7 @@ const initialState: AuthState = {
 };
 
 interface LoginPayload {
-  username: string;
+  mail: string;
   password: string;
 }
 
@@ -37,17 +38,39 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-export const logoutUser = createAsyncThunk(
-  'auth/logoutUser',
-  async () => {
-    authService.logout();
+interface RegisterPayload{
+  mail: string;
+  tel: string;
+  password: string;
+}
+
+export const register = createAsyncThunk(
+  'auth/register',
+  async (registerPayload: RegisterPayload, { rejectWithValue }) => {
+    try {
+
+      const data = await authService.register({...registerPayload});
+      return data;
+
+    } catch (error) {
+      return rejectWithValue((error as Error).message);
+    }
   }
 );
+
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
+
+    logout(state) {
+      state.user = null;
+      state.token = null;
+      state.isLoading = false;
+      state.error = null;
+
+    }
 
   },
   extraReducers: (builder) => {
@@ -56,16 +79,28 @@ const authSlice = createSlice({
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(loginUser.fulfilled, (state, action: PayloadAction<{ user: User, token: string }>) => {
+      .addCase(loginUser.fulfilled, (state, action: PayloadAction<Token>) => {
         state.isLoading = false;
-        state.user = action.payload.user;
-        state.token = action.payload.token;
+        state.token = action.payload.accessToken;
       })
       .addCase(loginUser.rejected, (state, action: PayloadAction<any>) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(register.fulfilled, (state, action: PayloadAction<void>) => {
+        state.isLoading = false;
+        state.error = null;
+      })
+      .addCase(register.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(register.rejected, (state, action: PayloadAction<any>) => {
         state.isLoading = false;
         state.error = action.payload;
       });
   },
 });
 
+export const { logout } = authSlice.actions;
 export default authSlice.reducer;

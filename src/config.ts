@@ -4,7 +4,7 @@ interface Config {
   }
   
   const developmentConfig: Config = {
-    apiUrl: 'https://localhost:44395/api/', // URL pour l'environnement de développement
+    apiUrl: 'https://localhost:44395/', // URL pour l'environnement de développement
   };
   
   const productionConfig: Config = {
