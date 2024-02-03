@@ -10,9 +10,10 @@ import {
   Divider,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { loginUser, AuthState } from "../../store/slices/authSlice";
+import { login, AuthState } from "../../store/slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
-
+import { enqueueNotification } from "../../store/slices/notificationSlice";
+import { NotificationSeverity } from "../../ValueObjects/Notification";
 const AuthForm = () => {
   const [credentials, setCredentials] = useState({
     mail: "",
@@ -23,13 +24,24 @@ const AuthForm = () => {
   const [showAlert, setShowAlert] = useState(false);
   const navigate = useNavigate();
 
-  const login = () => {
-    dispatch(loginUser(credentials));
+  const handleLogin = () => {
+    dispatch(login(credentials));
   };
 
   useEffect(() => {
-    if (!authState.isLoading && authState.token) navigate("/dashboard");
-  }, [authState.token, authState.user]);
+    if (!authState.isLoading && authState.isConnected) 
+    { 
+      dispatch(enqueueNotification(
+        {
+          key: "abc",
+          message:"Connexion réussie",
+          severity: NotificationSeverity.Success,
+          
+        }
+      ))
+      navigate("/dashboard")
+    };
+  }, [authState.isLoading, authState.isConnected]);
 
   useEffect(() => {
     if (authState.error) {
@@ -44,7 +56,7 @@ const AuthForm = () => {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    login();
+    handleLogin();
   };
   return (
     <Box

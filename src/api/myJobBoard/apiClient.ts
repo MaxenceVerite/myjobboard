@@ -1,51 +1,63 @@
-import axios from 'axios';
+import axios from "axios";
 import config from "../../config";
-
-import { refreshAccessToken, logout } from '../../store/slices/authSlice';
-import { store } from '../../store/store';
+import { refresh as refreshTokenApi } from "../myJobBoard/authentication/authenticationApi";
+import {getAccessToken, getRefreshToken} from "./tokenManager";
 
 
 const apiClient = axios.create({
   baseURL: config.apiUrl,
-  withCredentials: true
+  withCredentials: true,
 });
 
+// Interceptor de requête pour ajouter le token à chaque requête
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = getAccessToken();
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 apiClient.interceptors.response.use(
-  response => response,
-  async error => {
-     
-      const originalRequest = error.config;
-      
-      // Vérifier si l'erreur est due à un token expiré
-      if (error.response.status === 401) {
-          const state = store.getState();
-          const refreshTokenValue = state.auth.refreshToken; // Obtenez le refreshToken du state
+  (response) => response,
+  async (error) => {
+    
+    const originalRequest = error.config;
 
-          if (refreshTokenValue && !originalRequest.url.includes('/refresh')) {
-              originalRequest._isRetry = true; // Marquez que nous avons déjà essayé de rafraîchir le token
-
-              try {
-                  // On essaye de rafraichir le token
-                  const newAccessToken = await store.dispatch(refreshAccessToken(refreshTokenValue)).unwrap();
-                  
-                  // On met à jour les headers pour rejouer la requête avec le nouveau token
-                  apiClient.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
-                  originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-                  
-                  // Renvoyez la requête originale avec le nouveau token
-                  return apiClient(originalRequest);
-              } catch (error) {
-                  // Si le rafraîchissement échoue, déconnectez l'utilisateur
-                  store.dispatch(logout());
-                  return Promise.reject(error);
-              }
-          } else {
-              // Si c'est une 401 d'une tentative de refresh OU qu'on a pas de refreshtoken (httpOnly cookies)
-              store.dispatch(logout());
-          }
-      }
-
+    if (originalRequest._isRetry) {
       return Promise.reject(error);
+    }
+
+    originalRequest._isRetry = true;
+
+    if (
+      originalRequest.url.includes("/refresh") ||
+      error.response.status != 401
+    )
+      return Promise.reject(error);
+
+    const sessionExpiredError = {...error, sessionExpired: true}
+    const refreshToken = getRefreshToken();
+
+    if (!refreshToken) return Promise.reject(sessionExpiredError);
+
+    try {
+      await refreshTokenApi(refreshToken).then((data) => {
+  
+        originalRequest.headers["Authorization"] = `Bearer ${data.accessToken}`;
+
+        return apiClient(originalRequest);
+      });
+    } catch (error) {
+      return Promise.reject(sessionExpiredError);
+
+    }
+
   }
 );
 

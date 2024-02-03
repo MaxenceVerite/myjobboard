@@ -1,6 +1,7 @@
 import { STATUS_CODES } from "http";
 import Token from "../../../models/authentication/Token";
 import myJobBoardClient from "../apiclient";
+import { setAccessToken, setRefreshToken } from "../tokenManager";
 
 const register = async (mail: string, password: string): Promise<void> => {
   try {
@@ -15,7 +16,7 @@ const register = async (mail: string, password: string): Promise<void> => {
   }
 };
 
-const login = async (mail: string, password: string): Promise<Token> => {
+const login = async (mail: string, password: string): Promise<void> => {
   try {
     const response = await myJobBoardClient.post("/login", {
       email: mail,
@@ -28,6 +29,12 @@ const login = async (mail: string, password: string): Promise<Token> => {
       }
     }
     );
+
+    if(response.data){
+      setAccessToken(response.data.accessToken);
+      setRefreshToken(response.data.refreshToken);
+    }
+
     return response.data;
     
   } catch (error) {
@@ -36,12 +43,16 @@ const login = async (mail: string, password: string): Promise<Token> => {
   }
 };
 
+
 const refresh = async (refreshToken: string): Promise<Token> => {
   try {
-    const response = await myJobBoardClient.post("/refresh", {
+    const response = await myJobBoardClient.post<Token>("/refresh", {
       refreshToken: refreshToken
     }
     );
+
+    setAccessToken(response.data.accessToken);
+    setRefreshToken(response.data.refreshToken)
 
     return response.data;
     
@@ -51,4 +62,16 @@ const refresh = async (refreshToken: string): Promise<Token> => {
   }
 }
 
-export { register, login, refresh };
+const checkSession = async (): Promise<any> => {
+  try {
+    const response = await myJobBoardClient.get("/check-session");
+  
+    return response.data;
+    
+  } catch (error) {
+    console.log("Erreur lors de la récupération de la session courante", error);
+    throw error;
+  }
+}
+
+export { register, login,refresh, checkSession };

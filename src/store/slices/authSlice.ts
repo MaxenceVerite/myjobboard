@@ -6,16 +6,12 @@ import Token from '../../models/authentication/Token';
 
 export interface AuthState {
   isConnected: boolean;
-  token: string | null;
-  refreshToken: string | null;
   isLoading: boolean;
   error: string | null;
 }
 
 const initialState: AuthState = {
   isConnected: false,
-  token: null,
-  refreshToken: null,
   isLoading: false,
   error: null,
 };
@@ -25,8 +21,8 @@ interface LoginPayload {
   password: string;
 }
 
-export const loginUser = createAsyncThunk(
-  'auth/loginUser',
+export const login = createAsyncThunk(
+  'auth/login',
   async (credentials: LoginPayload, { rejectWithValue }) => {
     try {
 
@@ -38,6 +34,8 @@ export const loginUser = createAsyncThunk(
     }
   }
 );
+
+
 
 interface RegisterPayload{
   mail: string;
@@ -59,19 +57,20 @@ export const register = createAsyncThunk(
   }
 );
 
-// Action pour rafraîchir le token
-export const refreshAccessToken = createAsyncThunk(
-  'auth/refreshAccessToken',
-  async (refreshToken: string, { rejectWithValue }) => {
+export const fetchCurrentSession = createAsyncThunk(
+  'auth/fetchCurrentSession',
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await authService.refreshToken(refreshToken);
 
-      return response;
+      const data = await authService.checkSession();
+      return data;
+
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue((error as Error).message);
     }
   }
 );
+
 
 
 const authSlice = createSlice({
@@ -81,7 +80,6 @@ const authSlice = createSlice({
 
     logout(state) {
       state.isConnected = false;
-      state.token = null;
       state.isLoading = false;
       state.error = null;
 
@@ -90,16 +88,15 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(loginUser.pending, (state) => {
+      .addCase(login.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(loginUser.fulfilled, (state, action: PayloadAction<Token>) => {
+      .addCase(login.fulfilled, (state, action: PayloadAction<void>) => {
         state.isLoading = false;
-        state.token = action.payload.accessToken;
         state.isConnected = true;
       })
-      .addCase(loginUser.rejected, (state, action: PayloadAction<any>) => {
+      .addCase(login.rejected, (state, action: PayloadAction<any>) => {
         state.isLoading = false;
         state.error = action.payload;
         state.isConnected = false;
@@ -115,20 +112,7 @@ const authSlice = createSlice({
       .addCase(register.rejected, (state, action: PayloadAction<any>) => {
         state.isLoading = false;
         state.error = action.payload;
-      }).addCase(refreshAccessToken.pending, (state) => {
-        state.isLoading = true;
       })
-      .addCase(refreshAccessToken.fulfilled, (state, action: PayloadAction<Token>) => {
-        state.token = action.payload.accessToken;
-        state.refreshToken = action.payload.refreshToken;
-        state.isLoading = false;
-      })
-      .addCase(refreshAccessToken.rejected, (state, action:any) => {
-        state.error = action.payload;
-        state.refreshToken = null;
-        state.token = null;
-        state.isLoading = false;
-      });
   },
 });
 

@@ -3,7 +3,8 @@
 import { 
   register as registerApi,
   login as loginApi,
-  refresh as refreshTokenApi
+  refresh as refreshTokenApi,
+  checkSession as checkSessionApi
 
 } from "../api/myJobBoard/authentication/authenticationApi"
 import Token from '../models/authentication/Token';
@@ -19,7 +20,7 @@ interface RegisterData {
   tel: string;
 }
 
-const login = async (data: LoginData): Promise<Token> => {
+const login = async (data: LoginData): Promise<void> => {
   try {
     const response = await loginApi(data.mail, data.password);
 
@@ -29,6 +30,8 @@ const login = async (data: LoginData): Promise<Token> => {
   }
 };
 
+
+
 const logout = async () => {
   localStorage.removeItem('user'); 
 };
@@ -37,13 +40,14 @@ const register = async (registerData: RegisterData): Promise<void> => {
     return await registerApi(registerData.mail, registerData.password);
 }
 
-const refreshToken = async(refreshToken: string) : Promise<Token> => {
-  return await refreshTokenApi(refreshToken);
+const checkSession = async (): Promise<any> => {
+  return await checkSessionApi();
 }
+
 
 export default {
   login,
   logout,
   register,
-  refreshToken
+  checkSession
 };
