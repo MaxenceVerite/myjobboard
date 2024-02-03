@@ -1,10 +1,9 @@
 
-import axios from 'axios';
-import config from '../config';
-import User from '../models/user'
+
 import { 
   register as registerApi,
-  login as loginApi
+  login as loginApi,
+  refresh as refreshTokenApi
 
 } from "../api/myJobBoard/authentication/authenticationApi"
 import Token from '../models/authentication/Token';
@@ -38,8 +37,13 @@ const register = async (registerData: RegisterData): Promise<void> => {
     return await registerApi(registerData.mail, registerData.password);
 }
 
+const refreshToken = async(refreshToken: string) : Promise<Token> => {
+  return await refreshTokenApi(refreshToken);
+}
+
 export default {
   login,
   logout,
-  register
+  register,
+  refreshToken
 };

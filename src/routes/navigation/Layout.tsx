@@ -5,10 +5,9 @@ import FolderCopyRoundedIcon from "@mui/icons-material/FolderCopyRounded";
 import JoinInnerRoundedIcon from "@mui/icons-material/JoinInnerRounded";
 import NewspaperRoundedIcon from "@mui/icons-material/NewspaperRounded";
 import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
-import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
 import { Outlet, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { AuthState, logout } from "../../store/slices/authSlice";
+import { useDispatch} from "react-redux";
+import {logout } from "../../store/slices/authSlice";
 
 const drawerWidth = "18%";
 const navItems = [
@@ -70,6 +69,7 @@ const Layout = () => {
             {navItems.map((item) => {
               return (
                 <Button
+                  key={item.route}
                   onClick={() => {
                     navigate(item.route);
                   }}
