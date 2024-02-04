@@ -4,7 +4,12 @@ import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import { removeNotification } from '../../store/slices/notificationSlice';
 import { RootState } from '../../store/store';
+import Slide, { SlideProps } from '@mui/material/Slide';
 
+function SlideTransition(props: SlideProps) {
+    return <Slide {...props} direction="up" />;
+  }
+  
 const Notifier = () => {
   const dispatch = useDispatch();
   const notifications = useSelector((state: RootState) => state.notifications.notifications);
@@ -22,6 +27,7 @@ const Notifier = () => {
           autoHideDuration={6000}
           onClose={() => handleClose(notification.key)}
           anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+          TransitionComponent={SlideTransition}
         >
           <Alert onClose={() => handleClose(notification.key)} severity={notification.severity}>
             {notification.message}

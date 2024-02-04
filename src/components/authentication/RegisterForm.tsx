@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { register } from "../../store/slices/authSlice";
 import { useDispatch } from "react-redux";
 import { unwrapResult } from "@reduxjs/toolkit";
+import { enqueueNotification } from "../../store/slices/notificationSlice";
 
 
 export default function RegisterForm() {
@@ -29,6 +30,13 @@ export default function RegisterForm() {
     dispatch(register({mail: email, password: password, tel: phone}))
     .then(unwrapResult) 
     .then(() => {
+      enqueueNotification(
+        {
+          key: "REGISTER_SUCCESS",
+          message: "Compte MyJobBoard crée avec succès",
+          severity: "SUCCESS"
+        }
+      );
       navigate('/login'); 
     })
     

@@ -33,7 +33,7 @@ const AuthForm = () => {
     { 
       dispatch(enqueueNotification(
         {
-          key: "abc",
+          key: "CONNECTION_SUCCESS",
           message:"Connexion réussie",
           severity: NotificationSeverity.Success,
           
@@ -48,7 +48,7 @@ const AuthForm = () => {
       setShowAlert(true);
       const timer = setTimeout(() => {
         setShowAlert(false);
-      }, 1000);
+      }, 3000);
 
       return () => clearTimeout(timer);
     }

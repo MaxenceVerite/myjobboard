@@ -15,6 +15,7 @@ const notificationSlice = createSlice({
   reducers: {
     enqueueNotification(state, action) {
       state.notifications.push(action.payload);
+
     },
     removeNotification(state, action) {
       state.notifications = state.notifications.filter(

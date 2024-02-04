@@ -36,6 +36,7 @@ apiClient.interceptors.response.use(
     originalRequest._isRetry = true;
 
     if (
+      !error.response ||
       originalRequest.url.includes("/refresh") ||
       error.response.status != 401
     )
