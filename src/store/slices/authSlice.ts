@@ -57,13 +57,12 @@ export const register = createAsyncThunk(
   }
 );
 
-export const fetchCurrentSession = createAsyncThunk(
-  'auth/fetchCurrentSession',
+export const checkSession = createAsyncThunk(
+  'auth/checkSession',
   async (_, { rejectWithValue }) => {
     try {
 
-      const data = await authService.checkSession();
-      return data;
+      await authService.checkSession();
 
     } catch (error) {
       return rejectWithValue((error as Error).message);
@@ -113,6 +112,17 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       })
+      .addCase(checkSession.fulfilled, (state) => {
+        state.isConnected = true;
+        state.isLoading = false;
+      } )
+      .addCase(checkSession.pending, (state) => {
+        state.isLoading = true;
+      } )
+      .addCase(checkSession.rejected, (state) => {
+        state.isConnected = false;
+        state.isLoading = false;
+      } )
   },
 });
 

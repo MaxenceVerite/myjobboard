@@ -40,7 +40,7 @@ const register = async (registerData: RegisterData): Promise<void> => {
     return await registerApi(registerData.mail, registerData.password);
 }
 
-const checkSession = async (): Promise<any> => {
+const checkSession = async (): Promise<void> => {
   return await checkSessionApi();
 }
 

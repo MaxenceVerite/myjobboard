@@ -14,6 +14,7 @@ import { register } from "../../store/slices/authSlice";
 import { useDispatch } from "react-redux";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { enqueueNotification } from "../../store/slices/notificationSlice";
+import { NotificationSeverity } from "../../ValueObjects/Notification";
 
 
 export default function RegisterForm() {
@@ -32,9 +33,8 @@ export default function RegisterForm() {
     .then(() => {
       enqueueNotification(
         {
-          key: "REGISTER_SUCCESS",
           message: "Compte MyJobBoard crée avec succès",
-          severity: "SUCCESS"
+          severity: NotificationSeverity.Success
         }
       );
       navigate('/login'); 

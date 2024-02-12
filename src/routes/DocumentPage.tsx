@@ -132,8 +132,8 @@ const DocumentPage = () => {
   };
 
   return (
-    <Container maxWidth="lg">
-      <Box sx={{ my: 4 }}>
+    <Container maxWidth="xl">
+      <Box sx={{ mb: 4 }}>
         <Typography variant="h4" gutterBottom>
           Mes documents
         </Typography>

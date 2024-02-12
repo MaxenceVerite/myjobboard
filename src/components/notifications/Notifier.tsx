@@ -24,7 +24,7 @@ const Notifier = () => {
         <Snackbar
           key={notification.key}
           open={true}
-          autoHideDuration={6000}
+          autoHideDuration={notification.duration ? notification.duration : 5000}
           onClose={() => handleClose(notification.key)}
           anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
           TransitionComponent={SlideTransition}

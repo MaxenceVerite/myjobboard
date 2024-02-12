@@ -62,12 +62,9 @@ const refresh = async (refreshToken: string): Promise<Token> => {
   }
 }
 
-const checkSession = async (): Promise<any> => {
+const checkSession = async (): Promise<void> => {
   try {
-    const response = await myJobBoardClient.get("/check-session");
-  
-    return response.data;
-    
+    const response = await myJobBoardClient.get("/checkSession");
   } catch (error) {
     console.log("Erreur lors de la récupération de la session courante", error);
     throw error;

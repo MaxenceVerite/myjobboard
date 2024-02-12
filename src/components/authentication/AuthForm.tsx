@@ -33,10 +33,9 @@ const AuthForm = () => {
     { 
       dispatch(enqueueNotification(
         {
-          key: "CONNECTION_SUCCESS",
           message:"Connexion réussie",
           severity: NotificationSeverity.Success,
-          
+          duration: 2000
         }
       ))
       navigate("/dashboard")

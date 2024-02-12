@@ -1,7 +1,8 @@
 export interface Notification{
-    key: string,
+    key?: string,
     severity : NotificationSeverity,
     message: string,
+    duration?: number,
 }
 
 

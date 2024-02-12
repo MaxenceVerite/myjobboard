@@ -1,34 +1,34 @@
-// AuthProvider.js
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import AuthContext from '../contexts/AuthContext';
-import { fetchCurrentSession, login, logout } from '../store/slices/authSlice';
-import { RootState } from '../store/store';
+// src/providers/AuthProvider.js
+import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { checkSession as checkSessionAction } from '../store/slices/authSlice';
+import { CircularProgress, Paper } from '@mui/material';
+
+export const AuthContext = React.createContext({});
 
 const AuthProvider = ({ children }) => {
-  const dispatch:any = useDispatch();
-  const authState = useSelector((state: RootState) => state.auth);
+  const [isLoading, setLoading] = useState(true);
+  const dispatch = useDispatch<any>();
 
   useEffect(() => {
-    dispatch(fetchCurrentSession());
+    const checkSession = async () => {
+      await dispatch(checkSessionAction());
+      setLoading(false);
+    };
+   
+    checkSession();
+    
   }, [dispatch]);
 
-  const logoutHandler = () => {
-    dispatch(logout());
-  };
-
-  const loginHandler = (mail, password)=> {
-    dispatch(login({mail: mail, password: password}))
+  if (isLoading) {
+    return <CircularProgress/>
   }
 
-  // Les méthodes que vous souhaitez exposer
-  const contextValue:any = {
-    ...authState,
-    logout: logoutHandler,
-    login: loginHandler,
-  };
-
-  return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{}}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export default AuthProvider;

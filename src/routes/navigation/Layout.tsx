@@ -1,13 +1,23 @@
 // src/components/Layout.tsx
 import React from "react";
-import { Box, Drawer, List, Typography, Divider, Button } from "@mui/material";
+import {
+  Box,
+  Drawer,
+  List,
+  Typography,
+  Divider,
+  Button,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText
+} from "@mui/material";
 import FolderCopyRoundedIcon from "@mui/icons-material/FolderCopyRounded";
 import JoinInnerRoundedIcon from "@mui/icons-material/JoinInnerRounded";
 import NewspaperRoundedIcon from "@mui/icons-material/NewspaperRounded";
 import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
-import { Outlet, useNavigate } from "react-router-dom";
-import { useDispatch} from "react-redux";
-import {logout } from "../../store/slices/authSlice";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { logout } from "../../store/slices/authSlice";
 
 const drawerWidth = "18%";
 const navItems = [
@@ -17,17 +27,17 @@ const navItems = [
     icon: <DashboardRoundedIcon />,
   },
   {
-    label: "Ma recherche d'opportunités",
+    label: "Mes opportunités",
     route: "/opportunities",
     icon: <JoinInnerRoundedIcon />,
   },
   {
-    label: "Mes fiches process",
+    label: "Mes fiches",
     route: "/process-notes",
     icon: <NewspaperRoundedIcon />,
   },
   {
-    label: "Mon espace documents",
+    label: "Mes documents",
     route: "/documents",
     icon: <FolderCopyRoundedIcon />,
   },
@@ -35,10 +45,13 @@ const navItems = [
 const Layout = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<any>();
+  const location = useLocation();
 
+  const isSelected = (item): boolean => {
+    return location.pathname.includes(item.route);
+  };
   const handleLogout = () => {
     dispatch(logout());
-    navigate("/login");
   };
 
   return (
@@ -68,16 +81,26 @@ const Layout = () => {
           <List>
             {navItems.map((item) => {
               return (
-                <Button
+                <ListItemButton
                   key={item.route}
                   onClick={() => {
                     navigate(item.route);
                   }}
-                  startIcon={item.icon}
-                  fullWidth
+                  selected={isSelected(item)}
+                  sx={{
+                    "&.Mui-selected": {
+                      bgcolor: (theme) =>
+                        `${theme.palette.primary.main}!important`, // Override the background color when selected
+                      color: "white",
+                      "& .MuiListItemIcon-root": {
+                        color: "white", // Override the icon color when selected
+                      },
+                    },
+                  }}
                 >
-                  {item.label}
-                </Button>
+                  <ListItemIcon>{item.icon}</ListItemIcon>
+                  <ListItemText primary={item.label} />
+                </ListItemButton>
               );
             })}
           </List>
@@ -92,11 +115,7 @@ const Layout = () => {
               p: 2,
             }}
           >
-            <Button
-              onClick={handleLogout}
-              variant="contained"
-              color="primary"
-            >
+            <Button onClick={handleLogout} variant="contained" color="primary">
               Se Déconnecter
             </Button>
           </Box>

@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { Notification } from '../../ValueObjects/Notification';
+import { Notification, NotificationSeverity } from '../../ValueObjects/Notification';
+import { nanoid } from '@reduxjs/toolkit';
 
 interface NotificationState {
     notifications: Notification[]
@@ -13,8 +14,16 @@ const notificationSlice = createSlice({
   name: 'notifications',
   initialState,
   reducers: {
-    enqueueNotification(state, action) {
-      state.notifications.push(action.payload);
+    enqueueNotification(state, action: {payload: Notification}) {
+      const notification = action.payload;
+      const key = notification.key || nanoid(); 
+      const duration = notification.duration || 5000; 
+
+      state.notifications.push({
+        ...notification,
+        key,
+        duration,
+      });
 
     },
     removeNotification(state, action) {
