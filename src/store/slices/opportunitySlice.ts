@@ -84,6 +84,7 @@ const opportunitySlice = createSlice({
         getOpportunities.rejected,
         (state, action: PayloadAction<any>) => {
             state.isLoading = false;
+            state.error = action.payload
         }
     )
     .addCase(
