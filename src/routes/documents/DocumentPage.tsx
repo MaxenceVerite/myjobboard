@@ -27,7 +27,7 @@ import UploadFileIcon from "@mui/icons-material/UploadFile";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
-import DocumentListItem from "../components/documents/DocumentListItem";
+import DocumentListItem from "../../components/documents/DocumentListItem";
 
 import { styled } from "@mui/material/styles";
 import {
@@ -35,11 +35,11 @@ import {
   fetchCVs,
   uploadDocument,
   downloadDocument,
-} from "../store/slices/documentSlice";
-import { RootState, AppDispatch } from "../store/store";
-import { Document, DocumentType } from "../models/document";
-import { downloadDocumentOnUserPc } from "../helpers/fileHelper";
-import { deleteDocument } from "../services/documentService";
+} from "../../store/slices/documentSlice";
+import { RootState, AppDispatch } from "../../store/store";
+import { Document, DocumentType } from "../../models/document";
+import { downloadDocumentOnUserPc } from "../../helpers/fileHelper";
+import { deleteDocument } from "../../services/documentService";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -101,8 +101,6 @@ const DocumentPage = () => {
 
   const handleDelete = async (doc: Document) => {
     await deleteDocument(doc.id).then(() => {
-      console.log("coucougnette");
-      console.log(doc.type);
       if (doc.type === DocumentType.CV) {
         dispatch(fetchCVs());
       }

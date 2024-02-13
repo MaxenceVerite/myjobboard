@@ -9,7 +9,7 @@ export const AuthContext = React.createContext({});
 const AuthProvider = ({ children }) => {
   const [isLoading, setLoading] = useState(true);
   const dispatch = useDispatch<any>();
-
+  
   useEffect(() => {
     const checkSession = async () => {
       await dispatch(checkSessionAction());

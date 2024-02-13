@@ -1,6 +1,6 @@
 // src/routes/LoginPage.tsx
 import React from 'react';
-import AuthForm from '../components/authentication/AuthForm';
+import AuthForm from '../../components/authentication/AuthForm';
 import { Box } from '@mui/material';
 
 const LoginPage = () => {
