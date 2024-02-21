@@ -7,8 +7,15 @@ import {
   Typography,
   CircularProgress,
   Alert,
-  Divider,
+  Link,
+  Grid,
+  FormControlLabel,
+  Checkbox,
+  InputAdornment,
+  IconButton
 } from "@mui/material";
+import { VisibilityOff, Visibility } from "@mui/icons-material";
+import PersonIcon from "@mui/icons-material/Person";
 import { useNavigate } from "react-router-dom";
 import { login, AuthState } from "../../store/slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -22,24 +29,43 @@ const AuthForm = () => {
   const dispatch = useDispatch<any>();
   const authState = useSelector((state: { auth: AuthState }) => state.auth);
   const [showAlert, setShowAlert] = useState(false);
+  const [showPassword, setShowPassword] = React.useState(false);
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
+
   const navigate = useNavigate();
 
   const handleLogin = () => {
     dispatch(login(credentials));
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    handleLogin();
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setCredentials(prevCredentials => ({
+      ...prevCredentials,
+      [name]: value
+    }));
+  };
   useEffect(() => {
-    if (!authState.isLoading && authState.isConnected) 
-    { 
-      dispatch(enqueueNotification(
-        {
-          message:"Connexion réussie",
+    if (!authState.isLoading && authState.isConnected) {
+      dispatch(
+        enqueueNotification({
+          message: "Connexion réussie",
           severity: NotificationSeverity.Success,
-          duration: 2000
-        }
-      ))
-      navigate("/dashboard")
-    };
+          duration: 2000,
+        })
+      );
+      navigate("/dashboard");
+    }
   }, [authState.isLoading, authState.isConnected]);
 
   useEffect(() => {
@@ -53,61 +79,98 @@ const AuthForm = () => {
     }
   }, [authState.error]);
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    handleLogin();
-  };
+
+
   return (
-    <Box
-      component="form"
-      onSubmit={handleSubmit}
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        "& .MuiTextField-root": { m: 1, width: "25ch" },
-      }}
-    >
-      <Typography variant="h5" component="h2">
-        Connexion
+    <Box sx={{ p: 4, maxWidth: 400, m: 'auto', borderRadius: 2 }}>
+      <Typography variant="h4" mb={2} textAlign="center">
+        LOGO
       </Typography>
-      <TextField
-        label="Adresse e-mail"
-        variant="outlined"
-        value={credentials.mail}
-        onChange={(e) =>
-          setCredentials({ ...credentials, mail: e.target.value })
-        }
-      />
-      <TextField
-        label="Mot de passe"
-        variant="outlined"
-        type="password"
-        value={credentials.password}
-        onChange={(e) =>
-          setCredentials({ ...credentials, password: e.target.value })
-        }
-      />
-      <Box display="flex" alignItems="center">
-        <Button type="submit" variant="contained" sx={{ mt: 3, mr:2 }}>
+      <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          id="email"
+          label="E-mail"
+          name="mail"
+          autoComplete="email"
+          variant="standard" 
+          autoFocus
+          onChange={handleInputChange}
+          value={credentials.mail}
+          InputProps={
+            { endAdornment: (
+              <InputAdornment position="end">
+                <PersonIcon />
+              </InputAdornment>
+            ),
+            }
+          }
+          sx={{mb:"3%"}}
+        />
+        <TextField
+          onChange={handleInputChange}
+          margin="normal"
+          required
+          fullWidth
+          name="password"
+          value={credentials.password}
+          label="Mot de passe"
+          type={showPassword ? 'text' : 'password'}
+          id="password"
+          variant="standard" 
+          autoComplete="current-password"
+          InputProps={
+            { endAdornment: (
+              <InputAdornment position="end">
+                     <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword}
+                  onMouseDown={handleMouseDownPassword}
+                  edge="end"
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+            }
+          }
+          sx={{mb:"3%"}}
+        />
+        <FormControlLabel
+          control={<Checkbox value="remember" color="primary" />}
+          label="Rester connecté"
+        />
+        <Button
+          type="submit"
+          fullWidth
+          variant="contained"
+          sx={{ mt: 3, mb: 2 }}
+        >
           Se connecter
         </Button>
-        
-        <Button onClick={() => navigate("/register")} variant="outlined" sx={{ mt: 3 }}>
-          Créer un compte
-        </Button>
+        <Grid container>
+          <Grid item xs>
+            <Link href="#" variant="body2">
+              Mot de passe oublié?
+            </Link>
+          </Grid>
+          <Grid item>
+            <Link href="#" variant="body2" onClick={() => navigate('/register')}>
+              {"Pas encore de compte? Créer en un"}
+            </Link>
+          </Grid>
+        </Grid>
+        {authState.isLoading && (
+          <CircularProgress size={24} sx={{ mt: 3 }} />
+        )}
+        {showAlert && (
+          <Alert severity="error" sx={{ mt: 3 }}>
+            {authState.error}
+          </Alert>
+        )}
       </Box>
-
-      {authState.isLoading && (
-        <Box sx={{ display: "flex", justifyContent: "center", m: 2 }}>
-          <CircularProgress />
-        </Box>
-      )}
-      {showAlert && (
-        <Box sx={{ width: "100%", mt: 2 }}>
-          <Alert severity="error">{authState.error}</Alert>
-        </Box>
-      )}
     </Box>
   );
 };

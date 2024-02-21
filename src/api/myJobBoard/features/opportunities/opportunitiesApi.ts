@@ -46,9 +46,24 @@ const getOpportunity = async(id: string) : Promise<Opportunity> => {
     }
 }
 
+const createOpportunity = async(opportunity: Opportunity): Promise<Opportunity> => {
+
+    try{
+        var response = await myJobBoardApiClient.post(`${opportunitiesRessourcePath}`, opportunity)
+
+        return response.data
+    }catch(error){
+        console.log("Impossible de créer l'opportunité : " + error)
+        throw error;
+    }
+
+
+}
+
 export {
     getOpportunities,
     getOpportunity,
     updateOpportunity,
-    deleteOpportunity
+    deleteOpportunity,
+    createOpportunity
 }

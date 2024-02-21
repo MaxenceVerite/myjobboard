@@ -3,7 +3,8 @@ import {
     getOpportunity as getOpportunityApi,
     getOpportunities as getOpportunitiesApi,
     updateOpportunity as updateOpportunityApi,
-    deleteOpportunity as deleteOpportunityApi
+    deleteOpportunity as deleteOpportunityApi,
+    createOpportunity as createOpportunityApi
 
 
 } from "../api/myJobBoard/features/opportunities/opportunitiesApi";
@@ -27,10 +28,14 @@ const getOpportunities = async(): Promise<Opportunity[]> =>{
     return getOpportunitiesApi();
 }
 
+const createOpportunity = async(opportunity: Opportunity): Promise<Opportunity> => {
+    return createOpportunityApi(opportunity);
+}
 
 export {
     getOpportunities,
     getOpportunity,
     updateOpportunity,
-    deleteOpportunity
+    deleteOpportunity,
+    createOpportunity
 }

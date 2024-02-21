@@ -9,7 +9,8 @@ import {
   Button,
   ListItemButton,
   ListItemIcon,
-  ListItemText
+  ListItemText,
+  Paper
 } from "@mui/material";
 import FolderCopyRoundedIcon from "@mui/icons-material/FolderCopyRounded";
 import JoinInnerRoundedIcon from "@mui/icons-material/JoinInnerRounded";
@@ -55,7 +56,9 @@ const Layout = () => {
   };
 
   return (
+
     <Box sx={{ display: "flex" }}>
+   
       <Drawer
         sx={{
           width: drawerWidth,
@@ -67,7 +70,9 @@ const Layout = () => {
         }}
         variant="permanent"
         anchor="left"
+       
       >
+     
         <Box
           display="flex"
           flexDirection="column"
@@ -121,6 +126,7 @@ const Layout = () => {
           </Box>
         </Box>
       </Drawer>
+
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Outlet />
       </Box>

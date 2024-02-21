@@ -1,9 +1,11 @@
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import Opportunity from '../../models/opportunities/Opportunity';
+import Opportunity, { EOpportunityState } from '../../models/opportunities/Opportunity';
 import * as opportunityService from '../../services/opportunityService';
 
+
 interface OpportunityState {
+    opportunityPhases: EOpportunityState[],
     currentOpportunity?: Opportunity,
     opportunities: Opportunity[],
     isLoading: boolean,
@@ -11,6 +13,7 @@ interface OpportunityState {
 }
 
 const initialState: OpportunityState = {
+    opportunityPhases: [],
     opportunities: [],
     isLoading: false
 }
@@ -60,8 +63,27 @@ export const getOpportunities = createAsyncThunk(
     }
   );
 
+
+  interface CreateOpportunityPayload{
+    opportunity: Opportunity
+  }
+
+  export const createOpportunity = createAsyncThunk(
+    'opportunity/createOpportunity',
+    async (payload: CreateOpportunityPayload, { rejectWithValue }) => {
+      try {
+        var result = await opportunityService.createOpportunity(payload.opportunity);
+
+        return result;
+      } catch (error) {
+        return rejectWithValue('Erreur lors de la création de l\'opportunité');
+      }
+    }
+  );
+
+
 const opportunitySlice = createSlice({
-  name: 'opportunity',
+  name: 'opportunities',
   initialState,
   reducers: {
   },
@@ -125,6 +147,26 @@ const opportunitySlice = createSlice({
             state.isLoading = false;
             state.error = action.payload
         }
+    )
+    .addCase(
+      createOpportunity.fulfilled,
+      (state, action: PayloadAction<Opportunity>) =>  {
+        state.isLoading = false;
+        state.opportunities.push(action.payload)
+      }
+    )
+    .addCase(
+      createOpportunity.pending,
+      (state) =>  {
+        state.isLoading = true;
+      }
+    )
+    .addCase(
+      createOpportunity.rejected,
+      (state, action: PayloadAction<any>) =>  {
+        state.isLoading = false;
+        state.error = action.payload
+      }
     )
   },
 });

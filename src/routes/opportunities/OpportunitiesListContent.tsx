@@ -1,41 +1,58 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { Grid, Box, Typography, Card, CardContent, Button } from "@mui/material";
+import { useEffect, useState } from "react";
+import {
+  Grid,
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import OpportunityAdvicesList from "../../components/opportunities/opportunityAdvicesList";
 import SearchBar from "../../components/common/SearchBar";
-import React
- from "react";
+import React from "react";
+import CreateOpportunityForm from "../../components/opportunities/CreateOpportunityForm";
+import Opportunity from "../../models/opportunities/Opportunity";
+import { useDispatch, useSelector } from "react-redux";
+import { createOpportunity, getOpportunities } from "../../store/slices/opportunitySlice";
+import { RootState } from "../../store/store";
 
 const OpportunitiesListContent = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [showResolved, setShowResolved] = useState(false);
+  const [isCreationModalOpen, setIsCreationModalOpen] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch<any>();
+
+
+  const opportunities = useSelector((state: RootState) => state.opportunities.opportunities)
 
   const handleCreateOpportunity = () => {
-    // Logique pour créer une opportunité
+    handleCloseModal();
   };
 
   const handleNavOpportunity = (opportunityId: string) => {
     navigate(opportunityId);
   };
 
-  const handleSearch = (input: string) => {};
+  const handleSearch = (input: string) => {
 
-  // Mock data pour les opportunités
-  const opportunities = [
-    {
-      id: "1",
-      company: "CGI",
-      role: "Analyste développeur",
-      status: "Candidature envoyée",
-      startDate: "22/09/2023",
-      lastUpdatedDate: "22/10/2023",
-      warning:
-        "Cette opportunité n’a pas été mise à jour depuis plus de deux semaines.",
-    },
-    // ...autres opportunités
-  ];
+
+  };
+
+
+  useEffect(() => {
+    dispatch(getOpportunities());
+
+
+  })
+
+  const handleCloseModal = ()=> {
+    setIsCreationModalOpen(false);
+  }
+
 
   return (
     <>
@@ -52,9 +69,9 @@ const OpportunitiesListContent = () => {
               <CardContent>
                 <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                   <Typography variant="h6">
-                    {opp.company} - {opp.role}
+                    {opp.companyId} - {opp.roleTitle}
                   </Typography>
-                  <Typography color="textSecondary">{opp.status}</Typography>
+                  <Typography color="textSecondary">{opp.state}</Typography>
                 </Box>
                 <Box
                   sx={{
@@ -66,16 +83,16 @@ const OpportunitiesListContent = () => {
                 >
                   <Box>
                     <Typography variant="body2" color="textSecondary">
-                      Démarré le {opp.startDate}
+                      Démarré le {opp.startDate.toLocaleString()}
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
-                      Dernière mise à jour le {opp.lastUpdatedDate}
+                      Dernière mise à jour le {opp.lastUpdateDate.toLocaleString()}
                     </Typography>
                   </Box>
                   <Button
                     size="small"
                     variant="outlined"
-                    onClick={() => handleNavOpportunity(opp.id)}
+                    onClick={() => handleNavOpportunity(opp.id!)}
                   >
                     Voir
                   </Button>
@@ -87,7 +104,7 @@ const OpportunitiesListContent = () => {
             variant="contained"
             color="primary"
             startIcon={<AddIcon />}
-            onClick={handleCreateOpportunity}
+            onClick={() => setIsCreationModalOpen(true)}
             sx={{ mt: 2 }}
           >
             Créer une opportunité
@@ -98,6 +115,13 @@ const OpportunitiesListContent = () => {
           <OpportunityAdvicesList />
         </Grid>
       </Grid>
+
+      <Dialog open={isCreationModalOpen} onClose={handleCloseModal}>
+        <DialogTitle>Créer une nouvelle opportunité</DialogTitle>
+        <DialogContent>
+          <CreateOpportunityForm onSubmit={handleCreateOpportunity} onClose={handleCloseModal}/>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

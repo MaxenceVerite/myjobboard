@@ -1,4 +1,4 @@
-export default interface Compagny {
+export default interface Company {
     id?: string,
     name: string,
     linkedinPageUrl?: string,
