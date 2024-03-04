@@ -1,5 +1,5 @@
 import myJobBoardApiClient from "../../apiclient"
-import Opportunity from "../../../../models/opportunities/Opportunity"
+import Opportunity, { Interview } from "../../../../models/opportunities/Opportunity"
 
 const opportunitiesRessourcePath = "api/opportunities"
 
@@ -38,7 +38,6 @@ const deleteOpportunity = async(opportunity: Opportunity) : Promise<void> => {
 const getOpportunity = async(id: string) : Promise<Opportunity> => {
     try{
         var response = await myJobBoardApiClient.get(`${opportunitiesRessourcePath}/${id}`)
-
         return response.data
     }catch(error){
         console.log("Impossible de supprimer l'opportunité : " + error)
@@ -60,10 +59,33 @@ const createOpportunity = async(opportunity: Opportunity): Promise<Opportunity> 
 
 }
 
+const createInterview = async(opportunityId: string, interview: Interview): Promise<Interview> => {
+    try{
+        var response = await myJobBoardApiClient.post(`/api/opportunities/${opportunityId}/interviews`, interview)
+
+        return response.data
+    }catch(error){
+        console.log("Impossible de créer l'entretien : " + error)
+        throw error;
+    }
+}
+
+const deleteInterview = async(opportunityId: string, interviewId: string): Promise<void> => {
+    try{
+        await myJobBoardApiClient.delete(`/api/opportunities/${opportunityId}/interviews/${interviewId}`, )
+
+        
+    }catch(error){
+        console.log("Impossible de créer l'entretien : " + error)
+        throw error;
+    }
+}
+
 export {
     getOpportunities,
     getOpportunity,
     updateOpportunity,
     deleteOpportunity,
-    createOpportunity
+    createOpportunity,
+    createInterview
 }

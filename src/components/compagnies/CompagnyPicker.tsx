@@ -12,7 +12,6 @@ interface CompanyPickerProps {
 
 const CompanyPicker = ({ onCompanySelect }: CompanyPickerProps) => {
   const [inputValue, setInputValue] = useState('');
-  const [openDialog, setOpenDialog] = useState(false);
 
   const companies = useSelector((state: RootState) => state.companies.companies);
 
@@ -26,22 +25,15 @@ const CompanyPicker = ({ onCompanySelect }: CompanyPickerProps) => {
     setInputValue(newInputValue);
   };
 
-  const handleOpenDialog = () => {
-    setOpenDialog(true);
-  };
-
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-  };
 
   const handleSubmitCompany = () => {
     dispatch(createCompany({company: {name: inputValue}}))
-    handleCloseDialog();
   };
 
   return (
     <>
       <Autocomplete
+        
         freeSolo
         value={inputValue}
         onInputChange={handleInputChange}
@@ -61,23 +53,13 @@ const CompanyPicker = ({ onCompanySelect }: CompanyPickerProps) => {
         onChange={(event, newValue) => {
           if (newValue === `Créer "${inputValue}"`) {
             setInputValue(inputValue);
-            handleOpenDialog();
+            handleSubmitCompany();
           } else {
             const selectedCompany = companies.find((company) => company.name === newValue);
             onCompanySelect(selectedCompany?.id!);
           }
         }}
       />
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>Création d'une nouvelle entreprise</DialogTitle>
-        <DialogContent>
-         L'entreprise "{inputValue}" va être crée. Confirmer?
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>Annuler</Button>
-          <Button onClick={handleSubmitCompany} color="primary">Valider</Button>
-        </DialogActions>
-      </Dialog>
     </>
   );
 };

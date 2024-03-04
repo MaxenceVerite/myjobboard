@@ -3,6 +3,7 @@ import {
   Container,
   Typography,
   Box,
+  Grid,
 } from "@mui/material";
 
 import {Outlet} from "react-router-dom";
@@ -12,14 +13,9 @@ const OpportunitiesPage = () => {
 
 
   return (
-    <Container maxWidth="xl">
-      <Box sx={{ mb: 4}}>
-        <Typography variant="h4" gutterBottom>
-          Mes opportunités
-        </Typography>
-      </Box>
+    <Grid container xs={12} spacing="2">
       <Outlet/>
-    </Container>
+    </Grid>
   );
 };
 

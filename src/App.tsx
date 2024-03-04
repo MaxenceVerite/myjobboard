@@ -1,6 +1,11 @@
 // src/App.js
-import React from "react";
-import { Routes, Route, useLocation, Navigate } from "react-router-dom";
+import React, { useEffect } from "react";
+import {
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+} from "react-router-dom";
 import { useSelector } from "react-redux";
 
 import HomePage from "./routes/HomePage";
@@ -15,39 +20,53 @@ import { RootState } from "./store/store";
 import OpportunityDetailPage from "./routes/opportunities/OpportunityDetailContent";
 import OpportunitiesListContent from "./routes/opportunities/OpportunitiesListContent";
 import AuthLayout from "./routes/authentication/AuthLayout";
+import "./i18n";
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import theme from "./theme";
+import { ModalProvider } from "./contexts/ModalContext";
+import GlobalModal from "./components/common/modals/GlobalModal";
+import SheetPage from "./routes/SheetPage";
 
 function App() {
   const isConnected = useSelector((state: RootState) => state.auth.isConnected);
-  const location = useLocation();
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isConnected) {
+      navigate("/login");
+    }
+  }, [isConnected, navigate]);
 
   return (
-    <AuthProvider>
-      <Notifier />
-      <Routes>
-        <Route path="/" element={<AuthLayout />}>
-          <Route path="/login" element={<AuthForm />} />
-          <Route path="/register" element={<RegisterForm />} />
-        </Route>
-        {isConnected ? (
-          <Route path="/" element={<Layout />}>
-            <Route path="/dashboard" element={<HomePage />} />
-            <Route path="opportunities" element={<OpportunitiesPage />}>
-              <Route index element={<OpportunitiesListContent />} />
-              <Route path=":id" element={<OpportunityDetailPage />} />
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <AuthProvider>
+        <ModalProvider>
+          <GlobalModal />
+          <Notifier />
+          <Routes>
+            <Route path="/" element={<AuthLayout />}>
+              <Route path="/login" element={<AuthForm />} />
+              <Route path="/register" element={<RegisterForm />} />
             </Route>
-            <Route path="/documents" element={<DocumentPage />} />
-            <Route path="/profile" element={<HomePage />} />
-          </Route>
-        ) : (
-          <Route
-            path="*"
-            element={
-              <Navigate to="/login" state={{ from: location }} replace />
+            {isConnected && (
+              <Route path="/" element={<Layout />}>
+                <Route path="/dashboard" element={<HomePage />} />
+                <Route path="opportunities" element={<OpportunitiesPage />}>
+                  <Route index element={<OpportunitiesListContent />} />
+                  <Route path=":id" element={<OpportunityDetailPage />} />
+                </Route>
+                <Route path="/sheets" element={<SheetPage />} />
+                <Route path="/documents" element={<DocumentPage />} />
+                <Route path="/profile" element={<HomePage />} />
+              </Route>
+            )
             }
-          />
-        )}
-      </Routes>
-    </AuthProvider>
+          </Routes>
+        </ModalProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

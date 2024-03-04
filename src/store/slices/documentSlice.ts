@@ -1,138 +1,109 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { Document, DocumentType } from "../../models/document";
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { Document, DocumentType } from '../../models/document';
 import * as documentService from '../../services/documentService';
 
 interface DocumentState {
-  cvs: Document[];
-  motivationLetters: Document[];
+  documents: Document[];
   isLoading: boolean;
   error: string | null;
 }
 
 const initialState: DocumentState = {
-  cvs: [],
-  motivationLetters: [],
+  documents: [],
   isLoading: false,
   error: null,
 };
 
-
-export const fetchCVs = createAsyncThunk(
-  'documents/fetchCVs',
+export const fetchDocuments = createAsyncThunk(
+  'documents/fetchDocuments',
   async (_, { rejectWithValue }) => {
     try {
-      const cvs = await documentService.getDocumentsByType(DocumentType.CV);
-      return cvs;
+      const documents = await documentService.getAllDocuments();
+      return documents;
     } catch (error) {
-      return rejectWithValue('Erreur lors de la récupération des CVs');
+      return rejectWithValue('Erreur lors de la récupération des documents');
     }
   }
 );
 
-export const fetchMotivationLetters = createAsyncThunk(
-  'documents/fetchMotivationLetters',
+export const getDocumentsByIds = createAsyncThunk(
+  'documents/getDocumentsByIds',
   async (_, { rejectWithValue }) => {
     try {
-      const motivationLetters = await documentService.getDocumentsByType(DocumentType.MOTIVATION_LETTER);
-      return motivationLetters;
+      const documents = await documentService.getAllDocuments();
+      return documents;
     } catch (error) {
-      return rejectWithValue('Erreur lors de la récupération des lettres de motivation');
+      return rejectWithValue('Erreur lors de la récupération des documents par IDs');
     }
   }
 );
-
-interface UploadDocumentPayload {
-  type: DocumentType;
-  file: File; 
-  customName?: string;
-}
-
-
 
 export const uploadDocument = createAsyncThunk(
   'documents/uploadDocument',
-  async (payload: UploadDocumentPayload, { rejectWithValue }) => {
+  async (payload: { type: DocumentType; file: File; customName?: string }, thunkAPI) => {
     try {
-      const uploadedDocumentId = await documentService.uploadDocument(payload.file, payload.type, payload.customName);
-      return uploadedDocumentId;
+      const document = await documentService.uploadDocument(payload.file, payload.type, payload.customName);
+
+      await thunkAPI.dispatch(fetchDocuments());
+
+      return document;
     } catch (error) {
-      return rejectWithValue('Erreur lors du téléversement du document');
+      return thunkAPI.rejectWithValue('Erreur lors du téléversement du document');
     }
   }
 );
 
-
-interface DownloadDocumentPayload {
-  documentId: string
-}
-
 export const downloadDocument = createAsyncThunk(
-  'documents/uploadDocument',
-  async (payload: DownloadDocumentPayload, { rejectWithValue }) => {
+  'documents/downloadDocument',
+  async (documentId: string, { rejectWithValue }) => {
     try {
-     return await documentService.downloadDocument(payload.documentId);
+      const blob = await documentService.downloadDocument(documentId);
+      return blob;
     } catch (error) {
       return rejectWithValue('Erreur lors du téléchargement du document');
     }
   }
 );
-
-interface DeleteDocumentPayload {
-  documentId: string
-}
 
 export const deleteDocument = createAsyncThunk(
   'documents/deleteDocument',
-  async (payload: DeleteDocumentPayload, { rejectWithValue }) => {
+  async (documentId: string, { rejectWithValue }) => {
     try {
-     return await documentService.deleteDocument(payload.documentId);
+     return await documentService.deleteDocument(documentId);
     } catch (error) {
-      return rejectWithValue('Erreur lors du téléchargement du document');
+      return rejectWithValue('Erreur lors de la suppression du document');
     }
   }
 );
-
 
 const documentSlice = createSlice({
   name: 'documents',
   initialState,
-  reducers: {
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
-      // Traitement de l'état 'pending' pour la récupération des CVs
-      .addCase(fetchCVs.pending, (state) => {
+      .addCase(fetchDocuments.pending, (state) => {
         state.isLoading = true;
       })
-      // Traitement de l'état 'fulfilled' pour la récupération des CVs
-      .addCase(fetchCVs.fulfilled, (state, action: PayloadAction<Document[]>) => {
+      .addCase(fetchDocuments.fulfilled, (state, action: PayloadAction<Document[]>) => {
         state.isLoading = false;
-        state.cvs = action.payload;
+        state.documents = action.payload ?? [];
+        state.error = null;
       })
-      // Traitement de l'état 'rejected' pour la récupération des CVs
-      .addCase(fetchCVs.rejected, (state, action) => {
+      .addCase(fetchDocuments.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload as string; // Cast le payload en string
+        state.error = action.payload as string;
       })
-      // Traitement de l'état 'pending' pour la récupération des lettres de motivation
-      .addCase(fetchMotivationLetters.pending, (state) => {
-        state.isLoading = true;
-      })
-      // Traitement de l'état 'fulfilled' pour la récupération des lettres de motivation
-      .addCase(fetchMotivationLetters.fulfilled, (state, action: PayloadAction<Document[]>) => {
+      .addCase(getDocumentsByIds.fulfilled, (state, action: PayloadAction<Document[]>) => {
         state.isLoading = false;
-        state.motivationLetters = action.payload;
+        state.documents = action.payload
+        state.error = null;
       })
-      // Traitement de l'état 'rejected' pour la récupération des lettres de motivation
-      .addCase(fetchMotivationLetters.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload as string; 
-      });
-      builder.addCase(downloadDocument.fulfilled, (state, action) => {
-       
-      });
-  },
+      .addCase(deleteDocument.fulfilled, (state, action: PayloadAction<string>) => {
+        console.log("wesh")
+        state.documents = state.documents.filter(doc => doc.id !== action.payload);
+      })
+    }
 });
 
-export const {  } = documentSlice.actions;
 export default documentSlice.reducer;

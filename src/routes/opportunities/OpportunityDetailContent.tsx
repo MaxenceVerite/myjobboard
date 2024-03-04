@@ -7,87 +7,207 @@ import {
   Step,
   StepLabel,
   Divider,
-  Card,
-  CardContent,
-  CardActions,
-  IconButton,
-  Link,
+  TextareaAutosize,
+  TextField,
 } from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Article as ArticleIcon,
   AddCircleOutline as AddCircleOutlineIcon,
   EmojiPeopleOutlined,
+  Link,
 } from "@mui/icons-material";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
-import Opportunity, { EOpportunityState } from "../../models/opportunities/Opportunity";
-import OpportunityStageSteps from "./OpportunityStageSteps";
+import Opportunity, {
+  EOpportunityState,
+} from "../../models/opportunities/Opportunity";
 import { useDispatch } from "react-redux";
-import { getOpportunity } from "../../store/slices/opportunitySlice";
+import { getOpportunity, updateOpportunity } from "../../store/slices/opportunitySlice";
+import { useTranslation } from "react-i18next";
+import ApplicationContainer from "../../components/application/ApplicationContainer";
+import { fetchDocuments } from "../../store/slices/documentSlice";
+import FilterableSection from "../../components/common/FilterableSection";
+import ExpendableTextfield from "../../components/common/inputs/ExpendableTextfield";
+import DocumentCardList from "../../components/documents/DocumentCardList";
+import { useModal } from "../../contexts/ModalContext";
+import DocumentPicker from "../../components/documents/forms/DocumentPicker";
+import OpportunityInterviewCard from "../../components/opportunities/interviews/OpportunityInterviewCard";
+import OpportunityInterviewCardList from "../../components/opportunities/interviews/OpportunityInterviewCardList";
 
 const OpportunityDetailContent = () => {
   const { id } = useParams();
+
   const dispatch = useDispatch<any>();
-  const opportunity: Opportunity | undefined = useSelector(
-    (state: RootState) => {
-      return state.opportunities.currentOpportunity
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const {openModal, closeModal} = useModal();
+
+  useEffect(() => {
+    if (id) {
+      dispatch(getOpportunity({ id }));
     }
+  }, [id, dispatch]);
+
+  const opportunity = useSelector(
+    (state: RootState) => state.opportunities.currentOpportunity
   );
 
   useEffect(() => {
-    dispatch(getOpportunity({id: id!}))
-  }, [id])
+    if (opportunity?.associatedDocumentsId) {
+      dispatch(fetchDocuments());
+    }
 
-  const activeStep = 1;
+  }, [opportunity, dispatch]);
 
-  const phases: EOpportunityState[] = useSelector((state: RootState) => state.opportunities.opportunityPhases)
+  const opportunityDocuments = useSelector((state: RootState) =>
+    state.documents.documents.filter(
+      (doc) =>
+        opportunity?.associatedDocumentsId &&
+        opportunity.associatedDocumentsId.includes(doc.id)
+    )
+  );
+
+
+  const activeStep = EOpportunityState.APPLIED;
+
+  const phases: EOpportunityState[] = useSelector(
+    (state: RootState) => state.opportunities.opportunityStates
+  );
+  const [opportunityCompany] = useSelector((state: RootState) =>
+    state.companies.companies.filter((c) => c.id == opportunity!.companyId)
+  );
+
+  const companyName = opportunityCompany?.name ?? "Enseigne";
+
+
+  const handleJoinedDocumentsChange = (selectedDocumentIds: string[]) =>{
+    const safeOpportunity = {...opportunity!, associatedDocumentsId: selectedDocumentIds};
+
+    dispatch(updateOpportunity({opportunity: safeOpportunity}))
+    closeModal();
+  }
+
+  const handleJoinDocument = ()=> {
+    openModal("Selectionner un document", 
+      <DocumentPicker 
+      preselectedDocumentIds={opportunity?.associatedDocumentsId} 
+      multipleSelection
+      notifyOnCommit
+      onSelectionChange={handleJoinedDocumentsChange}
+       />
+    )
+    
+  }
+
+  
+
+  if (!opportunity || !id) {
+    return null;
+  }
 
   return (
-    <React.Fragment>
-      {opportunity && (
-        <Paper elevation={1} sx={{ padding: "3%" }}>
-          <Grid container xs={12}>
-            <Grid item xs={4}>
-              <Typography variant="h3">{opportunity.companyId}</Typography>
-            </Grid>
-            <Grid item xs={6} />
-            <Grid item xs={2}>
-              <Button variant="outlined" startIcon={<ArticleIcon />}>
-                Voir le résumé
-              </Button>
-            </Grid>
+    <Grid container xs={12}>
+      <Grid container xs={12} mb={4}>
+        <Grid item xs={6}>
+          <Typography
+            noWrap
+            fontWeight={500}
+            variant="h5"
+            color="secondary"
+            sx={{
+              maxWidth: "30vh",
+              "&:hover": {
+                textDecoration: "underline",
+                cursor: "pointer",
+              },
+            }}
+            onClick={(e) => {
+              e.stopPropagation;
+              opportunity.companyId
+                ? navigate(`/sheets/companies/${opportunity.companyId}`)
+                : undefined;
+            }}
+          >
+            {companyName}
+          </Typography>
 
-            <Grid item xs={12} mb={3}>
-              <Typography variant="h5">{opportunity.roleTitle}</Typography>
-            </Grid>
+          <Typography
+            noWrap
+            fontWeight={500}
+            variant="h6"
+            color="primary"
+            sx={{ maxWidth: "30vh" }}
+          >
+            {opportunity.roleTitle}
+          </Typography>
+        </Grid>
+        <Grid item xs={4} />
+        <Grid item xs={2}>
+          <Button color="info" variant="text" startIcon={<ArticleIcon />}>
+            Voir le résumé
+          </Button>
+        </Grid>
+      </Grid>
 
-            <Grid item xs={12} mb={5}>
-              <Divider />
-            </Grid>
-            <Grid item xs={12} mb={6}>
-              <Stepper activeStep={activeStep} alternativeLabel>
-                {phases.map((label) => (
-                  <Step key={label}>
-                    <StepLabel>{label}</StepLabel>
-                  </Step>
-                ))}
-              </Stepper>
-            </Grid>
-            <Grid xs={12}>
-              <OpportunityStageSteps
-                phase={EOpportunityState.Applied}
-                phaseOpportunitySteps={opportunity.steps}
-              />
-            </Grid>
-            <Grid xs={12}>
-             
-            </Grid>
-          </Grid>
-        </Paper>
-      )}
-    </React.Fragment>
+      <Grid container xs={12} mb={4}>
+        <Grid item xs={6}>
+          <Button
+            size="small"
+            color="primary"
+            variant="text"
+            startIcon={<Link />}
+          >
+            Lien vers l'offre
+          </Button>
+        </Grid>
+      </Grid>
+
+      <Grid item xs={12} mb={6}>
+        <Stepper activeStep={4} alternativeLabel>
+          {phases.slice(0, 3).map((label) => (
+            <Step key={label}>
+              <StepLabel>{t(`phase.${label}`)}</StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+      </Grid>
+
+      <FilterableSection sectionTitle="Notes" isExpanded>
+        <TextareaAutosize
+          minRows={3}
+          style={{
+            width: "100%",
+            resize: "vertical", 
+            padding: 10, 
+            fontSize: "1rem",
+            borderColor: "0",
+            border: "0",
+            boxShadow: "5px 10px 15px rgba(0,0,0,0.07)", 
+            outline: 'none'
+          
+          }}
+        />
+      </FilterableSection>
+
+      <DocumentCardList customAddDocument={handleJoinDocument} title="Documents envoyés" documents={opportunityDocuments} isExpanded/>
+
+
+  
+      <OpportunityInterviewCardList interviews={opportunity.interviews} isExpanded/>
+
+
+      <Grid xs={12} md={7} mb="3%">
+        <ApplicationContainer application={opportunity.relatedApplication} />
+      </Grid>
+      <Grid md={1}></Grid>
+      <Grid xs={12} md={4} mb="3%"></Grid>
+      <Grid xs={12}></Grid>
+      <Grid xs={12}>
+      </Grid>
+      <Grid xs={12}></Grid>
+    </Grid>
   );
 };
 

@@ -5,6 +5,7 @@ import notificationReducer from './slices/notificationSlice';
 import { userSessionMiddleware } from './middlewares/userSessionMiddleware';
 import companyReducer from "./slices/companySlice";
 import opportunityReducer from './slices/opportunitySlice';
+import interlocutorReducer from './slices/interlocutorSlice';
 
 export const store = configureStore({
   reducer: {
@@ -12,8 +13,8 @@ export const store = configureStore({
     documents: documentReducer,
     notifications: notificationReducer,
     companies: companyReducer,
-    opportunities: opportunityReducer
-    
+    opportunities: opportunityReducer,
+    interlocutors: interlocutorReducer
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(userSessionMiddleware),
 });

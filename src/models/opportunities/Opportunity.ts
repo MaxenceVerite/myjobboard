@@ -1,51 +1,88 @@
 import Interlocutor from "./Interlocutor"
+import Range from "../../valueObjects/Range"
 
-export default interface Opportunity{
+export interface IAnnotable{
+    freeNotes?: string
+}
+
+export default interface Opportunity extends IAnnotable{
     id?: string,
     roleTitle: string,
     industry?: string,
+  
     remoteCondition?: RemoteCondition,
     location?: string,
     companyId?: string,
     startDate: Date,
     lastUpdateDate: Date,
     state: EOpportunityState,
-    steps: OpportunityStep[],
-    indicativeSalaryRange?: SalaryRange
+    relatedApplication?: Application, // pas de vie en dehors de l'entité, relation 1-1 avec opport
+    interviews?: Interview[], 
+    offers?: Offer[]
+    indicativeSalaryRange?: SalaryRange,
+    associatedDocumentsId?: string[],
+    userAppreciationLevel?: number,
+    confidenceLevel?: number
+}
+
+
+
+export interface Interview extends IAnnotable {
+    id?: string,
+    interlocutorsId: string[],
+    type: InterviewType,
+    customType?: string,
+    dueDate: Date,
+    meetingConditions: MeetingConditions,
+
+}
+
+
+
+export interface Application extends IAnnotable {
+    type: ApplicationType,
+    customType?: string,
+    expectedExperienceInYears?: Range,
+    offerBudget?: SalaryRange,
+    linkToJobOffer?: string,
+}
+
+
+
+export interface Offer extends IAnnotable{
+    isCounterOffer: boolean,
+    grossYearlySalary: number,
+}
+
+
+export interface SalaryRange extends Range{
+    periodicity: Periodicity
 }
 
 
 
 export enum EOpportunityState{
-    Applied = "Applied", // A postuler, attend une proposition d'entretien
-    Interviewing = "Interviewing", // Passe des entretiens
-    WaitingForPropositions = "WaitingForPropositions", // Plus aucun entretien a passé, il ne reste plus qu'à attendre une réponse
-    Aborted = "Aborted", // Process annulée ou absence de réponse du recruteur
-    Refused = "Refused", // Opportunité refusée
-    Validated = "Validated"  // Opportunité validé
-}
-
-export interface OpportunityStep{
-   id?: string,
-   dueDate?: Date,
-   freeNotes?: string, 
+    APPLIED = "APPLIED", // A postuler, n'a encore aucun entretien de planifier
+    INTERVIEWING = "INTERVIEWING", // A passé au moins un entretien
+    NEGOCIATION_ON_OFFERS = "NEGOCIATION_ON_OFFERS", // A validé l'ensemble des entretiens, attend une offre qui lui convient
+    ABORTED = "ABORTED", // Process annulée (absence de réponse du recruteur par exemple)
+    REFUSED = "REFUSED", // Opportunité refusée par l'un des deux parties
+    VALIDATED = "VALIDATED"  // Opportunité validé (acceptation d'une offre)
 }
 
 
-export interface Interview extends OpportunityStep {
-    interlocutors: Interlocutor
+export enum InterviewType{
+    HR = "HR", 
+    Technical = "Technical",
+    Client = "Client",
+    Other = "Other"
 }
 
-export interface TechnicalInterview extends Interview {
-
+export enum MeetingConditions{
+    Videocall = "Videocall", 
+    Physical = "Physical"
 }
 
-export interface HRInterview extends Interview{
-    discussedRemote?: number,
-    negociatedMinSalary?: number,
-    negociatedMaxSalary?: number,
-
-}
 
 export enum RemoteCondition {
     Remote = "Remote",
@@ -53,17 +90,19 @@ export enum RemoteCondition {
     Office = "Office"
 }
 
-export interface SalaryRange{
-    minSalary: number,
-    maxSalary: number,
-    periodicity: Periodicity
+export  enum Periodicity{
+    Yearly = "Yearly",
+    Monthly = "Monthly",
+    Daily = "Daily"
 }
 
-export  enum Periodicity{
-    YEARLY,
-    MONTHLY,
-    DAILY
+export enum ApplicationType{
+    Spontaneous ="Spontaneous" , 
+    JobOffer = "JobOffer"
 }
+
+
+
 
 
 

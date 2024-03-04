@@ -5,6 +5,6 @@
         linkedinProfile?: string,
         mail?: string, 
         phone?: string,
-        compagnyId: string
+        companyId: string
 
     }

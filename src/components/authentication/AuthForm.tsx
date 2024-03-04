@@ -12,7 +12,7 @@ import {
   FormControlLabel,
   Checkbox,
   InputAdornment,
-  IconButton
+  IconButton,
 } from "@mui/material";
 import { VisibilityOff, Visibility } from "@mui/icons-material";
 import PersonIcon from "@mui/icons-material/Person";
@@ -21,6 +21,7 @@ import { login, AuthState } from "../../store/slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { enqueueNotification } from "../../store/slices/notificationSlice";
 import { NotificationSeverity } from "../../ValueObjects/Notification";
+import LogoLong from "../common/LogoLong";
 const AuthForm = () => {
   const [credentials, setCredentials] = useState({
     mail: "",
@@ -33,7 +34,9 @@ const AuthForm = () => {
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
-  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleMouseDownPassword = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
     event.preventDefault();
   };
 
@@ -50,9 +53,9 @@ const AuthForm = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setCredentials(prevCredentials => ({
+    setCredentials((prevCredentials) => ({
       ...prevCredentials,
-      [name]: value
+      [name]: value,
     }));
   };
   useEffect(() => {
@@ -79,35 +82,39 @@ const AuthForm = () => {
     }
   }, [authState.error]);
 
-
-
   return (
-    <Box sx={{ p: 4, maxWidth: 400, m: 'auto', borderRadius: 2 }}>
-      <Typography variant="h4" mb={2} textAlign="center">
-        LOGO
-      </Typography>
+    <Box height="100%" sx={{ p: "10%", m: "auto", borderRadius: 2 }}>
+      <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }} 
+      mb={3}
+      >
+        <LogoLong />
+      </Box>
       <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
         <TextField
           margin="normal"
           required
           fullWidth
           id="email"
-          label="E-mail"
+          placeholder="Email"
           name="mail"
           autoComplete="email"
-          variant="standard" 
+          variant="standard"
           autoFocus
           onChange={handleInputChange}
           value={credentials.mail}
-          InputProps={
-            { endAdornment: (
+          InputProps={{
+            endAdornment: (
               <InputAdornment position="end">
                 <PersonIcon />
               </InputAdornment>
             ),
-            }
-          }
-          sx={{mb:"3%"}}
+          }}
+          sx={{ mb: "3%" }}
         />
         <TextField
           onChange={handleInputChange}
@@ -116,15 +123,15 @@ const AuthForm = () => {
           fullWidth
           name="password"
           value={credentials.password}
-          label="Mot de passe"
-          type={showPassword ? 'text' : 'password'}
+          placeholder="Mot de passe"
+          type={showPassword ? "text" : "password"}
           id="password"
-          variant="standard" 
+          variant="standard"
           autoComplete="current-password"
-          InputProps={
-            { endAdornment: (
+          InputProps={{
+            endAdornment: (
               <InputAdornment position="end">
-                     <IconButton
+                <IconButton
                   aria-label="toggle password visibility"
                   onClick={handleClickShowPassword}
                   onMouseDown={handleMouseDownPassword}
@@ -134,37 +141,74 @@ const AuthForm = () => {
                 </IconButton>
               </InputAdornment>
             ),
-            }
-          }
-          sx={{mb:"3%"}}
+          }}
+          sx={{ mb: "6%" }}
         />
-        <FormControlLabel
-          control={<Checkbox value="remember" color="primary" />}
-          label="Rester connecté"
-        />
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <FormControlLabel
+            control={<Checkbox value="remember" color="secondary" />}
+            label="Rester connecté"
+          />
+          <Link
+            href="#"
+            variant="body1"
+            color="secondary"
+            sx={{ display: "flex", alignItems: "center" }}
+          >
+            Mot de passe oublié?
+          </Link>
+        </Box>
         <Button
           type="submit"
           fullWidth
+          color="success"
           variant="contained"
           sx={{ mt: 3, mb: 2 }}
         >
-          Se connecter
+          Connexion
         </Button>
-        <Grid container>
-          <Grid item xs>
-            <Link href="#" variant="body2">
-              Mot de passe oublié?
-            </Link>
-          </Grid>
-          <Grid item>
-            <Link href="#" variant="body2" onClick={() => navigate('/register')}>
-              {"Pas encore de compte? Créer en un"}
-            </Link>
-          </Grid>
-        </Grid>
-        {authState.isLoading && (
-          <CircularProgress size={24} sx={{ mt: 3 }} />
-        )}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <span>
+            Pas encore inscrit?{" "}
+            <Link
+              href="#"
+              variant="body2"
+              color="secondary"
+              onClick={() => navigate("/register")}
+            >
+              Créer un compte
+            </Link>{" "}
+          </span>
+        </Box>
+        <Button
+            fullWidth
+            variant="outlined"
+            color="primary"
+            sx={{ mt: 2 }}
+          >
+            Connexion avec Linkedin
+          </Button>
+          <Button
+            fullWidth
+            variant="outlined"
+            color="secondary"
+            sx={{ mt: 2 }}
+          >
+            Connexion avec Google
+          </Button>
+        {authState.isLoading && <CircularProgress size={24} sx={{ mt: 3 }} />}
         {showAlert && (
           <Alert severity="error" sx={{ mt: 3 }}>
             {authState.error}

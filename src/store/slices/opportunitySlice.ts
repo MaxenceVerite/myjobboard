@@ -1,11 +1,11 @@
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import Opportunity, { EOpportunityState } from '../../models/opportunities/Opportunity';
+import Opportunity, { EOpportunityState, Interview} from '../../models/opportunities/Opportunity';
 import * as opportunityService from '../../services/opportunityService';
 
 
 interface OpportunityState {
-    opportunityPhases: EOpportunityState[],
+    opportunityStates: EOpportunityState[],
     currentOpportunity?: Opportunity,
     opportunities: Opportunity[],
     isLoading: boolean,
@@ -13,7 +13,7 @@ interface OpportunityState {
 }
 
 const initialState: OpportunityState = {
-    opportunityPhases: [],
+    opportunityStates: Object.values(EOpportunityState),
     opportunities: [],
     isLoading: false
 }
@@ -81,6 +81,40 @@ export const getOpportunities = createAsyncThunk(
     }
   );
 
+  interface UpdateOpportunityPayload{
+    opportunity: Opportunity
+  }
+  export const updateOpportunity = createAsyncThunk(
+    'opportunity/updateOpportunity',
+    async (payload: UpdateOpportunityPayload, { rejectWithValue }) => {
+      try {
+        var result = await opportunityService.updateOpportunity(payload.opportunity);
+
+        return result;
+      } catch (error) {
+        return rejectWithValue('Erreur lors de la mise à jour de l\'opportunité');
+      }
+    }
+  );
+
+
+  interface CreateInterviewPayload{
+    opportunityId: string,
+    interview: Interview
+  }
+
+  export const createInterview = createAsyncThunk(
+    'opportunity/createInterview',
+    async (payload: CreateInterviewPayload, { rejectWithValue }) => {
+      try {
+        var result = await opportunityService.createInterview(payload.opportunityId, payload.interview);
+
+        return result;
+      } catch (error) {
+        return rejectWithValue('Erreur lors de la création de l\'opportunité');
+      }
+    }
+  );
 
 const opportunitySlice = createSlice({
   name: 'opportunities',
@@ -91,7 +125,7 @@ const opportunitySlice = createSlice({
     builder
     .addCase(
         getOpportunities.fulfilled, 
-        (state, action: PayloadAction<Opportunity[]>) => {
+        (state:any, action: PayloadAction<Opportunity[]>) => {
             state.opportunities = action.payload;
             state.isLoading = false;
         }
@@ -112,6 +146,7 @@ const opportunitySlice = createSlice({
     .addCase(
         getOpportunity.fulfilled, 
         (state, action: PayloadAction<Opportunity>) => {
+            
             state.currentOpportunity = action.payload;
             state.isLoading = false;
         }
@@ -163,6 +198,26 @@ const opportunitySlice = createSlice({
     )
     .addCase(
       createOpportunity.rejected,
+      (state, action: PayloadAction<any>) =>  {
+        state.isLoading = false;
+        state.error = action.payload
+      }
+    )
+    .addCase(
+      updateOpportunity.fulfilled,
+      (state, action: PayloadAction<Opportunity>) =>  {
+        state.isLoading = false;
+        state.opportunities= state.opportunities.map((item) => item.id == action.payload.id ? action.payload : item);
+      }
+    )
+    .addCase(
+      updateOpportunity.pending,
+      (state) =>  {
+        state.isLoading = true;
+      }
+    )
+    .addCase(
+      updateOpportunity.rejected,
       (state, action: PayloadAction<any>) =>  {
         state.isLoading = false;
         state.error = action.payload

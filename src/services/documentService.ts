@@ -7,7 +7,10 @@ import {
 } from "../api/myJobBoard/features/documents/documentsApi"
 
 
+const getAllDocuments = async (): Promise<Document[]> => {
+  return await getDocumentsApi();
 
+}
 
 const getDocumentsByType = async (type: DocumentType): Promise<Document[]> => {
    return await getDocumentsApi({type:type});
@@ -22,8 +25,10 @@ const downloadDocument = async(documentId: string): Promise<Blob> => {
   return await downloadDocumentApi(documentId);
 }
 
-const deleteDocument = async(documentId: string): Promise<void> => {
-  return await deleteDocumentApi(documentId);
+const deleteDocument = async(documentId: string): Promise<string> => {
+  var response = await deleteDocumentApi(documentId);
+
+  return response;
 }
 
 
@@ -31,5 +36,6 @@ export {
     getDocumentsByType,
     uploadDocument,
     downloadDocument,
-    deleteDocument
+    deleteDocument,
+    getAllDocuments
 }

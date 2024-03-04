@@ -1,31 +1,30 @@
 import { DocumentType } from "../../../../models/document"
 import myJobBoardClient from "../../apiclient";
 import { Document } from "../../../../models/document";
+import FilterCriteriasBuilder, { FilterCriteriaOperator } from "../../utils/FilterCriteriasBuilder";
 
-const documentsRessourcePath = "api/documents"
-const getDocumentsEndpointPath = documentsRessourcePath;
-const uploadDocumentEndpointPath = `${documentsRessourcePath}/upload`
-const deleteDocumentEndpointPath = `${documentsRessourcePath}`
+
 
 interface DocumentFilter{
     userId?: string,
     type?: DocumentType
 }
 
-const getDocuments = async (filter: DocumentFilter): Promise<Document[]> => {
+const getDocuments = async (filter?: DocumentFilter): Promise<Document[]> => {
     try {
         const params: any = {};
 
-        params.userId = filter.userId ?? "toto";
+       
         
-        if (filter.type) {
-            params.type = filter.type;
-        }
+        var filterCriteriasBuilder = new FilterCriteriasBuilder();
+        var encodedFilterCriteria = filterCriteriasBuilder.addCriteria("type", FilterCriteriaOperator.eq, filter?.type)
+                                                          .buildQueryString();
 
-        const response = await myJobBoardClient.get<Document[]>(`${getDocumentsEndpointPath}`, {
+        params.filterCriterias = encodedFilterCriteria;
+
+        const response = await myJobBoardClient.get<Document[]>(`api/documents`, {
             params: params
         });
-
         return response.data;
     } catch (error) {
         console.error("Erreur lors de la récupération des documents:", error);
@@ -43,7 +42,7 @@ const uploadDocument = async(file:File,  type: DocumentType, customName: string|
         
     
         try {
-            const response = await myJobBoardClient.post(uploadDocumentEndpointPath, formData, {
+            const response = await myJobBoardClient.post(`api/documents/upload`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -57,7 +56,7 @@ const uploadDocument = async(file:File,  type: DocumentType, customName: string|
 
 const downloadDocument = async(documentId: string): Promise<Blob> => {
     try {
-        const response = await myJobBoardClient.get(`/documents/${documentId}/download`, {
+        const response = await myJobBoardClient.get(`api/documents/${documentId}/download`, {
           responseType: 'blob'
         });
         
@@ -68,11 +67,11 @@ const downloadDocument = async(documentId: string): Promise<Blob> => {
       }
 }
 
-const deleteDocument = async(documentId: string) : Promise<void> => {
+const deleteDocument = async(documentId: string) : Promise<string> => {
     try {
 
-       return await myJobBoardClient.delete(`${deleteDocumentEndpointPath}/${documentId}`);
-
+       await myJobBoardClient.delete(`api/documents/${documentId}`);
+       return documentId;
     } catch (error) {
         console.error("Erreur lors de la suppression d'un document:", error);
         throw error;

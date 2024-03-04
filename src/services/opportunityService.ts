@@ -1,11 +1,11 @@
-import Opportunity from "../models/opportunities/Opportunity";
+import Opportunity, { Interview } from "../models/opportunities/Opportunity";
 import { 
     getOpportunity as getOpportunityApi,
     getOpportunities as getOpportunitiesApi,
     updateOpportunity as updateOpportunityApi,
     deleteOpportunity as deleteOpportunityApi,
-    createOpportunity as createOpportunityApi
-
+    createOpportunity as createOpportunityApi,
+    createInterview as createInterviewApi
 
 } from "../api/myJobBoard/features/opportunities/opportunitiesApi";
 
@@ -32,10 +32,16 @@ const createOpportunity = async(opportunity: Opportunity): Promise<Opportunity> 
     return createOpportunityApi(opportunity);
 }
 
+const createInterview = async(opportunityId: string, interview: Interview): Promise<Interview> => {
+
+    return createInterviewApi(opportunityId, interview);
+}
+
 export {
     getOpportunities,
     getOpportunity,
     updateOpportunity,
     deleteOpportunity,
-    createOpportunity
+    createOpportunity,
+    createInterview
 }
