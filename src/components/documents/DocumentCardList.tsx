@@ -37,12 +37,10 @@ const DocumentCardList = ({
   customAddDocument,
 }: DocumentCardListProps) => {
   const fileInputRef = useRef<any>(null);
-  const [localIsExpanded, setLocalIsExpanded] = useState(isExpanded ?? false);
   const dispatch = useDispatch<any>();
 
   const handleAdd = () => {
     if (customAddDocument) {
-      console.log("coucou");
       customAddDocument();
       return;
     }

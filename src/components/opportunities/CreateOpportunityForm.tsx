@@ -17,6 +17,7 @@ import Opportunity, {
 import CompanyPicker from "../compagnies/CompagnyPicker";
 import { useDispatch } from "react-redux";
 import { createOpportunity } from "../../store/slices/opportunitySlice";
+import { useTranslation } from "react-i18next";
 
 interface CreateOpportunityFormProps {
   onClose: () => void;
@@ -31,19 +32,18 @@ const CreateOpportunityForm = ({
     roleTitle: "",
     startDate: new Date(),
     lastUpdateDate: new Date(),
-    state: EOpportunityState.APPLIED,
+    state: EOpportunityState.DRAFT,
     remoteCondition: RemoteCondition.Office,
   });
 
   const dispatch = useDispatch<any>();
-
+  const { t } = useTranslation();
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setOpportunityData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e) => {
-
     dispatch(createOpportunity({ opportunity: opportunityData }));
     onSubmit();
   };
@@ -73,23 +73,22 @@ const CreateOpportunityForm = ({
           value={opportunityData.roleTitle}
           onChange={handleInputChange}
         />
-        <TextField   
-            value={opportunityData.remoteCondition}   
-            variant="standard"         
-            id="remoteCondition"
-            name="remoteCondition" 
-            select 
-            fullWidth 
-            margin="normal"
-            placeholder="Condition TT"
-            onChange={handleInputChange}
-  
+        <TextField
+          value={opportunityData.remoteCondition}
+          variant="standard"
+          id="remoteCondition"
+          name="remoteCondition"
+          select
+          fullWidth
+          margin="normal"
+          placeholder="Condition TT"
+          onChange={handleInputChange}
         >
-            {Object.values(RemoteCondition).map((condition) => (
-              <MenuItem key={condition} value={condition}>
-                {condition}
-              </MenuItem>
-            ))}
+          {Object.values(RemoteCondition).map((condition) => (
+            <MenuItem key={condition} value={condition}>
+              {t(condition)}
+            </MenuItem>
+          ))}
         </TextField>
         <TextField
           id="startDate"
@@ -105,13 +104,14 @@ const CreateOpportunityForm = ({
           margin="normal"
           fullWidth
         />
-
-        <Box>
-          <Button color="secondary" type="submit" fullWidth variant="contained" >
+        <FormControl fullWidth margin="normal">
+          <Button color="primary" type="submit" fullWidth variant="contained">
             Créer
           </Button>
-        </Box>
+        </FormControl>
       </Box>
+
+      <Box></Box>
     </Container>
   );
 };

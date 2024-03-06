@@ -69,6 +69,17 @@ const createInterview = async(opportunityId: string, interview: Interview): Prom
         throw error;
     }
 }
+const updateInterview = async(opportunityId: string, interview: Interview ): Promise<Interview> => {
+    try{
+        var response = await myJobBoardApiClient.put(`/api/opportunities/${opportunityId}/interviews/${interview.id}`, interview )
+        return response.data;
+        
+    }catch(error){
+        console.log("Impossible de mettre à jour l'entretien : " + error)
+        throw error;
+    }
+}
+
 
 const deleteInterview = async(opportunityId: string, interviewId: string): Promise<void> => {
     try{
@@ -87,5 +98,7 @@ export {
     updateOpportunity,
     deleteOpportunity,
     createOpportunity,
-    createInterview
+    createInterview,
+    deleteInterview,
+    updateInterview
 }

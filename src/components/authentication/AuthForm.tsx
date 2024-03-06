@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import { VisibilityOff, Visibility } from "@mui/icons-material";
 import PersonIcon from "@mui/icons-material/Person";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { login, AuthState } from "../../store/slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { enqueueNotification } from "../../store/slices/notificationSlice";
@@ -41,7 +41,9 @@ const AuthForm = () => {
   };
 
   const navigate = useNavigate();
-
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/dashboard";
+  console.log(from);
   const handleLogin = () => {
     dispatch(login(credentials));
   };
@@ -58,6 +60,7 @@ const AuthForm = () => {
       [name]: value,
     }));
   };
+
   useEffect(() => {
     if (!authState.isLoading && authState.isConnected) {
       dispatch(
@@ -67,7 +70,7 @@ const AuthForm = () => {
           duration: 2000,
         })
       );
-      navigate("/dashboard");
+      navigate(from);
     }
   }, [authState.isLoading, authState.isConnected]);
 

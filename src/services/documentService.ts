@@ -3,7 +3,8 @@ import {
   getDocuments as getDocumentsApi,
   uploadDocument as uploadDocumentApi,
   downloadDocument as downloadDocumentApi,
-  deleteDocument as deleteDocumentApi
+  deleteDocument as deleteDocumentApi,
+  updateDocument as updateDocumentApi
 } from "../api/myJobBoard/features/documents/documentsApi"
 
 
@@ -31,11 +32,18 @@ const deleteDocument = async(documentId: string): Promise<string> => {
   return response;
 }
 
+const updateDocument = async(document: Document): Promise<Document> => {
+  var response = await updateDocumentApi(document);
+
+  return response;
+}
+
 
 export {
     getDocumentsByType,
     uploadDocument,
     downloadDocument,
     deleteDocument,
-    getAllDocuments
+    getAllDocuments,
+    updateDocument
 }

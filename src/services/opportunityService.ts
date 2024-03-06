@@ -5,7 +5,9 @@ import {
     updateOpportunity as updateOpportunityApi,
     deleteOpportunity as deleteOpportunityApi,
     createOpportunity as createOpportunityApi,
-    createInterview as createInterviewApi
+    createInterview as createInterviewApi,
+    updateInterview as updateInterviewApi,
+    deleteInterview as deleteInterviewApi
 
 } from "../api/myJobBoard/features/opportunities/opportunitiesApi";
 
@@ -37,11 +39,23 @@ const createInterview = async(opportunityId: string, interview: Interview): Prom
     return createInterviewApi(opportunityId, interview);
 }
 
+const updateInterview = async(opportunityId: string, interview: Interview): Promise<Interview> => {
+
+    return  updateInterviewApi(opportunityId, interview);
+}
+
+const deleteInterview = async(opportunityId: string, interviewId: string): Promise<void> => {
+
+    return deleteInterviewApi(opportunityId, interviewId);
+}
+
 export {
     getOpportunities,
     getOpportunity,
     updateOpportunity,
     deleteOpportunity,
     createOpportunity,
-    createInterview
+    createInterview,
+    updateInterview,
+    deleteInterview
 }

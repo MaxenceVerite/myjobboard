@@ -10,58 +10,68 @@ import {
   alpha,
 } from "@mui/material";
 
-
 import DeleteIcon from "@mui/icons-material/Delete";
 
 import { useDispatch } from "react-redux";
 
-
 import { useModal } from "../../../contexts/ModalContext";
 import ConfirmForm from "../../common/forms/ConfirmForm";
-import { Interview, InterviewType } from "../../../models/opportunities/Opportunity";
+import {
+  Interview,
+  InterviewType,
+} from "../../../models/opportunities/Opportunity";
 import { useNavigate } from "react-router-dom";
-
+import CreateOrEditInterviewForm from "./CreateOrEditInterviewForm";
+import { useTranslation } from "react-i18next";
+import { deleteInterview } from "../../../store/slices/opportunitySlice";
 
 interface OpportunityInterviewCardProps {
+  opportunityId: string;
   interview: Interview;
 }
 
-
 const OpportunityInterviewCard: React.FC<OpportunityInterviewCardProps> = ({
-    interview,
-
+  opportunityId,
+  interview,
 }) => {
   const dispatch = useDispatch<any>();
   const navigate = useNavigate();
+  const {t} = useTranslation();
+  const { openModal, closeModal } = useModal();
 
-  const {openModal, closeModal} = useModal();
-
-  const handleDelete = async (interview: Interview) => {
-    openModal("Suppression d'un entretien", 
-    <ConfirmForm text={`L'entretien' ${interview.type} du ${interview.dueDate} va être supprimé. Souhaitez-vous continuer?`} 
-    onCancel={closeModal}
-    onConfirm={() => {
-
-      closeModal();
-    }}
-    />
-    
-    )
-   
+  const handleDelete = async () => {
+    openModal(
+      "Suppression d'un entretien",
+      <ConfirmForm
+        text={`L'entretien "${t(`interviewType.${interview.type}`)}" du ${interview.dueDate} va être supprimé. Souhaitez-vous continuer?`}
+        onConfirm={() => {
+          dispatch(deleteInterview({interviewId: interview.id!, opportunityId: opportunityId}))
+          closeModal();
+        }}
+      />
+    );
   };
 
-  const handleInterviewNavigation = ()=> {
-    navigate(`/interviews/${interview.id}`)
-  }
+  const handleOpenEditInterviewModal = () => {
+    openModal(
+      "Modifier un entretien",
+      <CreateOrEditInterviewForm
+        opportunityId={opportunityId}
+        interview={interview}
+        onSubmit={closeModal}
+      />
+    );
+  };
+
+
 
   const computeInterviewTypeTitle = () => {
-    if(interview.type != InterviewType.Other) return interview.type;
+    if (interview.type != InterviewType.Other) return interview.type;
 
-    if(interview.customType) return interview.customType;
+    if (interview.customType) return interview.customType;
 
     return InterviewType.Other;
-
-  }
+  };
 
   const interviewTypeTitle = computeInterviewTypeTitle();
 
@@ -97,11 +107,10 @@ const OpportunityInterviewCard: React.FC<OpportunityInterviewCardProps> = ({
           },
         },
         "&:hover .actions": {
-          opacity: 1
-        }
+          opacity: 1,
+        },
       })}
-
-      onClick={handleInterviewNavigation}
+      onClick={handleOpenEditInterviewModal}
     >
       <CardContent
         sx={{
@@ -146,9 +155,20 @@ const OpportunityInterviewCard: React.FC<OpportunityInterviewCardProps> = ({
           },
         }}
       >
-
+        <IconButton
+          onClick={(e) => {
+            e.stopPropagation();
+            handleDelete();
+          }}
+          sx={{
+            position: "absolute",
+            top: 0,
+            right: 5,
+          }}
+        >
+          <DeleteIcon />
+        </IconButton>
       </Box>
-  
     </Card>
   );
 };

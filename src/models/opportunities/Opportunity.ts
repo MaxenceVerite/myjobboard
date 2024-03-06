@@ -33,7 +33,7 @@ export interface Interview extends IAnnotable {
     type: InterviewType,
     customType?: string,
     dueDate: Date,
-    meetingConditions: MeetingConditions,
+    meetingCondition: MeetingConditions,
 
 }
 
@@ -62,12 +62,14 @@ export interface SalaryRange extends Range{
 
 
 export enum EOpportunityState{
+    DRAFT= "DRAFT",
     APPLIED = "APPLIED", // A postuler, n'a encore aucun entretien de planifier
     INTERVIEWING = "INTERVIEWING", // A passé au moins un entretien
     NEGOCIATION_ON_OFFERS = "NEGOCIATION_ON_OFFERS", // A validé l'ensemble des entretiens, attend une offre qui lui convient
     ABORTED = "ABORTED", // Process annulée (absence de réponse du recruteur par exemple)
     REFUSED = "REFUSED", // Opportunité refusée par l'un des deux parties
-    VALIDATED = "VALIDATED"  // Opportunité validé (acceptation d'une offre)
+    VALIDATED = "VALIDATED",  // Opportunité validé (acceptation d'une offre)
+    ARCHIVED = "ARCHIVED"
 }
 
 
@@ -79,8 +81,8 @@ export enum InterviewType{
 }
 
 export enum MeetingConditions{
-    Videocall = "Videocall", 
-    Physical = "Physical"
+    Videocall = "VIDEOCALL", 
+    Physical = "PHYSICAL"
 }
 
 

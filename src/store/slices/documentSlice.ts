@@ -76,6 +76,17 @@ export const deleteDocument = createAsyncThunk(
   }
 );
 
+export const updateDocument = createAsyncThunk(
+  'documents/updateDocument',
+  async (document: Document, { rejectWithValue }) => {
+    try {
+     return await documentService.updateDocument(document);
+    } catch (error) {
+      return rejectWithValue('Erreur lors de la mise à jour du document');
+    }
+  }
+);
+
 const documentSlice = createSlice({
   name: 'documents',
   initialState,
@@ -100,8 +111,19 @@ const documentSlice = createSlice({
         state.error = null;
       })
       .addCase(deleteDocument.fulfilled, (state, action: PayloadAction<string>) => {
-        console.log("wesh")
+
         state.documents = state.documents.filter(doc => doc.id !== action.payload);
+      })
+      .addCase(updateDocument.fulfilled, (state, action: PayloadAction<Document>) => {
+        state.documents = state.documents.map(doc => doc.id === action.payload.id? action.payload : doc);
+      })
+      .addCase(updateDocument.pending, (state) => {
+        state.isLoading = true;
+     
+      })
+      .addCase(updateDocument.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
       })
     }
 });

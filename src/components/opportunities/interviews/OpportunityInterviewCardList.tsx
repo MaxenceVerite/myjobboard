@@ -8,36 +8,31 @@ import CreateOrEditInterviewForm from "./CreateOrEditInterviewForm";
 
 
 interface OpportunityInterviewCardListProps {
-  interviews: Interview[];
+  opportunityId: string,
+  interviews?: Interview[];
   isExpanded: boolean;
 }
 
-const OpportunityInterviewCardList = ({ interviews, isExpanded }) => {
+const OpportunityInterviewCardList = ({ interviews, isExpanded, opportunityId }: OpportunityInterviewCardListProps) => {
 
 const {openModal, closeModal} = useModal();
 
 const handleOpenCreateInterviewModal = () =>{
     openModal(
         "Créer un entretien",
-        <CreateOrEditInterviewForm onSubmit={closeModal}/>
+        <CreateOrEditInterviewForm opportunityId={opportunityId} onSubmit={closeModal}/>
     )
     
 }
 
-const handleOpenEditInterviewModal = (interview: Interview) =>{
-    openModal(
-        "Modifier un entretien",
-        <CreateOrEditInterviewForm /*interview={null}*/ onSubmit={closeModal}/>
-    )
-    
-}
 
   return (
     <FilterableSection sectionTitle="Entretiens" isExpanded={isExpanded}>
       <Grid container xs={12}>
-        {interviews.map((interview, index) => (
+        {interviews && 
+        interviews.map((interview, index) => (
           <Grid key={index} item xs={6} md={2} marginY={4}>
-            <OpportunityInterviewCard interview={interview} />
+            <OpportunityInterviewCard opportunityId={opportunityId} interview={interview} />
           </Grid>
         ))}
         {(

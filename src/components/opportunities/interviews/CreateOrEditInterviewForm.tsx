@@ -18,21 +18,26 @@ import {
 } from "../../../models/opportunities/Opportunity";
 import InterlocutorsPicker from "../../interlocutors/InterlocutorsPicker";
 import { useDispatch } from "react-redux";
-import Interlocutor from "../../../models/opportunities/Interlocutor";
+import {
+  createInterview,
+  updateInterview,
+} from "../../../store/slices/opportunitySlice";
 
 interface CreateOrEditInterviewFormProps {
+  opportunityId: string;
   interview?: Interview;
   onSubmit: () => void;
 }
 
 const CreateOrEditInterviewForm = ({
+  opportunityId,
   interview,
   onSubmit,
 }: CreateOrEditInterviewFormProps) => {
   const { t } = useTranslation();
   const dispatch = useDispatch<any>();
   const [showCustomType, setShowCustomType] = useState(
-    interview && interview.type === interview?.type
+    interview && interview.type === InterviewType.Other
   );
 
   const [_interview, setInterview] = useState<Interview>(
@@ -42,13 +47,20 @@ const CreateOrEditInterviewForm = ({
           dueDate: new Date(),
           interlocutorsId: [],
           type: InterviewType.HR,
-          meetingConditions: MeetingConditions.Physical,
+          meetingCondition: MeetingConditions.Physical,
         }
   );
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+    if (!interview)
+      dispatch(
+        createInterview({ opportunityId: opportunityId, interview: _interview })
+      );
+    else
+      dispatch(
+        updateInterview({ opportunityId: opportunityId, interview: _interview })
+      );
     onSubmit();
   };
 
@@ -57,8 +69,8 @@ const CreateOrEditInterviewForm = ({
     setInterview((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleInterlocutorSelectionChange = (interlocutors: Interlocutor[]) => {
-    const ids = interlocutors.map((c) => c.id!);
+  const handleInterlocutorSelectionChange = (interlocutorIds: string[]) => {
+    const ids = interlocutorIds.map((id) => id);
     setInterview((prev) => ({ ...prev, interlocutorsId: ids }));
   };
 
@@ -108,9 +120,9 @@ const CreateOrEditInterviewForm = ({
           margin="normal"
           fullWidth
           select
-          id="meetingConditions"
-          name="meetingConditions"
-          value={_interview.meetingConditions}
+          id="meetingCondition"
+          name="meetingCondition"
+          value={_interview.meetingCondition}
           label="Methode d'entretien"
           onChange={handleInputChange}
         >
@@ -122,7 +134,7 @@ const CreateOrEditInterviewForm = ({
         </TextField>
 
         <TextField
-        variant="standard"
+          variant="standard"
           id="dueDate"
           label="Date de l'entretien"
           type="date"
@@ -142,8 +154,14 @@ const CreateOrEditInterviewForm = ({
         />
 
         <Box>
-          <Button type="submit" fullWidth variant="contained" sx={{ mb: "2%" }}>
-            Créer
+          <Button
+            color="primary"
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mb: "2%" }}
+          >
+            {interview ? "Modifier" : "Créer"}
           </Button>
         </Box>
       </Box>

@@ -5,6 +5,7 @@ import {
   Route,
   Navigate,
   useNavigate,
+  useLocation,
 } from "react-router-dom";
 import { useSelector } from "react-redux";
 
@@ -31,10 +32,10 @@ function App() {
   const isConnected = useSelector((state: RootState) => state.auth.isConnected);
 
   const navigate = useNavigate();
-
+  const location = useLocation();
   useEffect(() => {
     if (!isConnected) {
-      navigate("/login");
+      navigate('/login', { state: { from: location } });
     }
   }, [isConnected, navigate]);
 

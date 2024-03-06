@@ -52,7 +52,6 @@ const DocumentCard: React.FC<DocumentCardProps> = ({
   const handleDelete = async (doc: Document) => {
     openModal("Suppression d'un document", 
     <ConfirmForm text={`Le document ${doc.name} va être supprimé. Souhaitez-vous continuer?`} 
-    onCancel={closeModal}
     onConfirm={() => {
       dispatch(deleteDocument(doc.id));
       closeModal();

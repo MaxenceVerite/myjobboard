@@ -78,11 +78,24 @@ const deleteDocument = async(documentId: string) : Promise<string> => {
     }
 }
 
+const updateDocument = async(document: Document) : Promise<Document> => {
+    try {
+
+       const response = await myJobBoardClient.put(`api/documents/${document.id}`, document);
+       return response.data;
+    } catch (error) {
+        console.error("Erreur lors de la mise à jour d'un document:", error);
+        throw error;
+    }
+}
+
+
 
 
 export {
     getDocuments,
     uploadDocument,
     downloadDocument,
-    deleteDocument
+    deleteDocument,
+    updateDocument
 }

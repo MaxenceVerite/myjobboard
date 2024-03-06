@@ -11,16 +11,18 @@ import {
 } from "@mui/material";
 import { Document, DocumentType } from "../../../models/document"; // Assurez-vous que le chemin d'importation est correct
 import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
+import { updateDocument } from "../../../store/slices/documentSlice";
 
 interface DocumentFormProps {
   document: Document;
   onSubmit: () => void;
 }
 
-const DocumentForm = ({ document }: DocumentFormProps) => {
+const DocumentForm = ({ document, onSubmit }: DocumentFormProps) => {
   const [name, setName] = useState(document.name);
   const [type, setType] = useState<DocumentType>(document.type);
-
+  const dispatch = useDispatch<any>();
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
   };
@@ -31,7 +33,9 @@ const DocumentForm = ({ document }: DocumentFormProps) => {
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    console.log({ name, type });
+   
+    dispatch(updateDocument({...document, name: name, type: type}))
+    onSubmit();
   };
 
   const { t } = useTranslation();
@@ -68,7 +72,7 @@ const DocumentForm = ({ document }: DocumentFormProps) => {
         fullWidth
         type="submit"
         variant="contained"
-        color="secondary"
+        color="primary"
       >
         Enregistrer
       </Button>
