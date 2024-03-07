@@ -39,7 +39,7 @@ const OpportunityInterviewCard: React.FC<OpportunityInterviewCardProps> = ({
   interview,
 }) => {
   const dispatch = useDispatch<any>();
-  const navigate = useNavigate();
+
   const { t } = useTranslation();
   const { openModal, closeModal } = useModal();
 
@@ -107,7 +107,7 @@ const OpportunityInterviewCard: React.FC<OpportunityInterviewCardProps> = ({
         .join(", ")
     : "";
 
-  // Calculez si plusieurs interlocuteurs pour afficher les tooltips
+  
   const multipleInterlocutors = interlocutorNames.split(", ").length > 1;
 
   return (
