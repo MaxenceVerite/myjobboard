@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   IconButton,
   CardMedia,
@@ -24,6 +24,10 @@ import { useNavigate } from "react-router-dom";
 import CreateOrEditInterviewForm from "./CreateOrEditInterviewForm";
 import { useTranslation } from "react-i18next";
 import { deleteInterview } from "../../../store/slices/opportunitySlice";
+import { getInterlocutors } from "../../../store/slices/interlocutorSlice";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../store/store";
+import { EventNote } from "@mui/icons-material";
 
 interface OpportunityInterviewCardProps {
   opportunityId: string;
@@ -36,16 +40,35 @@ const OpportunityInterviewCard: React.FC<OpportunityInterviewCardProps> = ({
 }) => {
   const dispatch = useDispatch<any>();
   const navigate = useNavigate();
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const { openModal, closeModal } = useModal();
+
+  const interlocutors = useSelector(
+    (state: RootState) => state.interlocutors.interlocutors
+  );
+
+  useEffect(() => {
+    if (!interview?.interlocutorsId) return;
+
+    if (interview.interlocutorsId.length === 0) {
+      dispatch(getInterlocutors());
+    }
+  }, [dispatch, interview.interlocutorsId?.length]);
 
   const handleDelete = async () => {
     openModal(
       "Suppression d'un entretien",
       <ConfirmForm
-        text={`L'entretien "${t(`interviewType.${interview.type}`)}" du ${interview.dueDate} va être supprimé. Souhaitez-vous continuer?`}
+        text={`L'entretien "${t(`interviewType.${interview.type}`)}" du ${
+          interview.dueDate
+        } va être supprimé. Souhaitez-vous continuer?`}
         onConfirm={() => {
-          dispatch(deleteInterview({interviewId: interview.id!, opportunityId: opportunityId}))
+          dispatch(
+            deleteInterview({
+              interviewId: interview.id!,
+              opportunityId: opportunityId,
+            })
+          );
           closeModal();
         }}
       />
@@ -63,8 +86,6 @@ const OpportunityInterviewCard: React.FC<OpportunityInterviewCardProps> = ({
     );
   };
 
-
-
   const computeInterviewTypeTitle = () => {
     if (interview.type != InterviewType.Other) return interview.type;
 
@@ -74,6 +95,20 @@ const OpportunityInterviewCard: React.FC<OpportunityInterviewCardProps> = ({
   };
 
   const interviewTypeTitle = computeInterviewTypeTitle();
+
+  const interlocutorNames: string = interview.interlocutorsId
+    ? interlocutors
+        .filter((interlocutor) =>
+          interview.interlocutorsId.includes(interlocutor.id!)
+        )
+        .map(
+          (interlocutor) => `${interlocutor.firstName} ${interlocutor.lastName}`
+        )
+        .join(", ")
+    : "";
+
+  // Calculez si plusieurs interlocuteurs pour afficher les tooltips
+  const multipleInterlocutors = interlocutorNames.split(", ").length > 1;
 
   return (
     <Card
@@ -131,16 +166,32 @@ const OpportunityInterviewCard: React.FC<OpportunityInterviewCardProps> = ({
           </Typography>
         </Tooltip>
 
-        <Typography variant="body2" color="text.secondary">
-          {new Date(interview.dueDate).toLocaleString("fr-FR", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false,
-          })}
-        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <EventNote color="action" />
+          <Typography variant="body2" sx={{ marginLeft: "10px" }}>
+            {new Date(interview.dueDate).toLocaleDateString(t("locale"), {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </Typography>
+        </Box>
+
+        {interview?.interlocutorsId && multipleInterlocutors ? (
+          <Tooltip title={interlocutorNames}>
+            <Typography component="span">, ...</Typography>
+          </Tooltip>
+        ) : (
+          ` ${interlocutorNames}`
+        )}
       </CardContent>
       <Box
         className="actions"
