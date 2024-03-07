@@ -12,9 +12,9 @@ const resources = {
           "meetingConditions.VIDEOCALL": "Video Call", 
           "meetingConditions.PHYSICAL": "Physical",
           "interviewType.HR":"HR Interview",
-          "interviewType.Technical":"Technical Interview",
-          "interviewType.Client":"Client Interview",
-          "interviewType.Other":"Other",
+          "interviewType.TECHNICAL":"Technical Interview",
+          "interviewType.CLIENT":"Client Interview",
+          "interviewType.OTHER":"Other",
           "documentType.CV": "CV",
           "documentType.MOTIVATION_LETTER": "Motivation Letter"
         }
@@ -28,9 +28,9 @@ const resources = {
           "meetingConditions.VIDEOCALL": "Visioconférence", 
           "meetingConditions.PHYSICAL": "En physique",
           "interviewType.HR":"Entretien RH",
-          "interviewType.Technical":"Entretien Technique",
-          "interviewType.Client":"Entretien Client Final",
-          "interviewType.Other":"Autre",
+          "interviewType.TECHNICAL":"Entretien Technique",
+          "interviewType.CLIENT":"Entretien Client Final",
+          "interviewType.OTHER":"Autre",
           "documentType.CV": "CV",
           "documentType.MOTIVATION_LETTER": "Lettre de motivation"
         }

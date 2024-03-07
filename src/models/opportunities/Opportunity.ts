@@ -75,9 +75,9 @@ export enum EOpportunityState{
 
 export enum InterviewType{
     HR = "HR", 
-    Technical = "Technical",
-    Client = "Client",
-    Other = "Other"
+    Technical = "TECHNICAL",
+    Client = "CLIENT",
+    Other = "OTHER"
 }
 
 export enum MeetingConditions{

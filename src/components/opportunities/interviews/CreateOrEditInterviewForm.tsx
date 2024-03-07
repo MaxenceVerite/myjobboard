@@ -10,6 +10,7 @@ import {
   Select,
   Button,
   MenuItem,
+  TextareaAutosize,
 } from "@mui/material";
 import {
   Interview,
@@ -151,6 +152,28 @@ const CreateOrEditInterviewForm = ({
         <InterlocutorsPicker
           preselectedInterlocutors={_interview.interlocutorsId}
           onInterlocutorsSelectionChange={handleInterlocutorSelectionChange}
+        />
+       
+        <TextareaAutosize
+          minRows={3}
+          placeholder="Notes ..."
+          name="freeNotes"
+          id="freeNotes"
+          style={{
+            width: "100%",
+            resize: "vertical",
+            padding: 10,
+            fontSize: "1rem",
+            borderColor: "0",
+            border: "0",
+            boxShadow: "5px 10px 15px rgba(0,0,0,0.07)",
+            outline: "none",
+            marginTop:"2%",
+            marginBottom:"2%"
+          }}
+          value={_interview.freeNotes}
+          onChange={handleInputChange}
+          
         />
 
         <Box>

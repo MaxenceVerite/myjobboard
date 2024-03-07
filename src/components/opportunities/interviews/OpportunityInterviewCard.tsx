@@ -87,11 +87,12 @@ const OpportunityInterviewCard: React.FC<OpportunityInterviewCardProps> = ({
   };
 
   const computeInterviewTypeTitle = () => {
-    if (interview.type != InterviewType.Other) return interview.type;
+    if (interview.type != InterviewType.Other)
+      return t(`interviewType.${interview.type}`);
 
     if (interview.customType) return interview.customType;
 
-    return InterviewType.Other;
+    return t(`interviewType.${InterviewType.Other}`);
   };
 
   const interviewTypeTitle = computeInterviewTypeTitle();
@@ -107,7 +108,6 @@ const OpportunityInterviewCard: React.FC<OpportunityInterviewCardProps> = ({
         .join(", ")
     : "";
 
-  
   const multipleInterlocutors = interlocutorNames.split(", ").length > 1;
 
   return (
@@ -116,12 +116,12 @@ const OpportunityInterviewCard: React.FC<OpportunityInterviewCardProps> = ({
         height: 260,
         minWidth: 200,
         margin: 1,
-        paddingTop: 1,
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
+        justifyContent: "space-between",
         position: "relative",
+        paddingTop: 1,
+        alignItems: "left",
         "& .icon-svg": {
           color: theme.palette.secondary.main,
         },
@@ -149,8 +149,9 @@ const OpportunityInterviewCard: React.FC<OpportunityInterviewCardProps> = ({
     >
       <CardContent
         sx={{
-          maxWidth: "90%",
           padding: "10px",
+          paddingBottom: 0,
+          maxWidth: "90%",
         }}
       >
         <Tooltip title={interviewTypeTitle} placement="top" arrow>
@@ -166,33 +167,43 @@ const OpportunityInterviewCard: React.FC<OpportunityInterviewCardProps> = ({
           </Typography>
         </Tooltip>
 
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <EventNote color="action" />
-          <Typography variant="body2" sx={{ marginLeft: "10px" }}>
-            {new Date(interview.dueDate).toLocaleDateString(t("locale"), {
-              day: "numeric",
-              month: "short",
-              year: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
-          </Typography>
-        </Box>
+        <Typography variant="subtitle2" color="textSecondary" sx={{ mb: 1 }}>
+          {t(`meetingConditions.${interview.meetingCondition}`)}
+        </Typography>
 
-        {interview?.interlocutorsId && multipleInterlocutors ? (
-          <Tooltip title={interlocutorNames}>
-            <Typography component="span">, ...</Typography>
-          </Tooltip>
-        ) : (
-          ` ${interlocutorNames}`
+        {interview?.interlocutorsId && (
+          <Box sx={{ display: "flex", flexDirection: "column" }}>
+            {multipleInterlocutors ? (
+              <Tooltip title={interlocutorNames}>
+                <Typography variant="body2">{`${
+                  interlocutorNames.split(", ")[0]
+                }, ...`}</Typography>
+              </Tooltip>
+            ) : (
+              <Typography variant="body2">{interlocutorNames}</Typography>
+            )}
+          </Box>
         )}
       </CardContent>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          padding: "10px",
+          paddingTop: 0,
+        }}
+      >
+        <EventNote color="action" />
+        <Typography variant="body2" sx={{ marginLeft: "10px" }}>
+          {new Date(interview.dueDate).toLocaleDateString(t("locale"), {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </Typography>
+      </Box>
       <Box
         className="actions"
         sx={{
