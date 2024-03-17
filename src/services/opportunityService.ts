@@ -7,7 +7,9 @@ import {
     createOpportunity as createOpportunityApi,
     createInterview as createInterviewApi,
     updateInterview as updateInterviewApi,
-    deleteInterview as deleteInterviewApi
+    deleteInterview as deleteInterviewApi,
+    updateOpportunityDocuments as updateOpportunityDocumentsApi,
+    updateOpportunityInterviewInterlocutors as updateOpportunityInterviewInterlocutorsApi
 
 } from "../api/myJobBoard/features/opportunities/opportunitiesApi";
 
@@ -49,6 +51,14 @@ const deleteInterview = async(opportunityId: string, interviewId: string): Promi
     return deleteInterviewApi(opportunityId, interviewId);
 }
 
+const updateOpportunityDocuments = async(opportunityId: string, documentsIds: string[]) => {
+    return updateOpportunityDocumentsApi(opportunityId, documentsIds);
+}
+
+const updateOpportunityInterviewInterlocutors = async(opportunityId: string, interviewId: string, interlocutorsIds: string[]) => {
+    return updateOpportunityInterviewInterlocutorsApi(opportunityId, interviewId, interlocutorsIds);
+}
+
 export {
     getOpportunities,
     getOpportunity,
@@ -57,5 +67,7 @@ export {
     createOpportunity,
     createInterview,
     updateInterview,
-    deleteInterview
+    deleteInterview,
+    updateOpportunityDocuments,
+    updateOpportunityInterviewInterlocutors
 }

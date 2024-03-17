@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { Notification } from '../../ValueObjects/Notification';
+import { Notification } from '../../valueObjects/Notification';
 import { nanoid } from '@reduxjs/toolkit';
 
 interface NotificationState {

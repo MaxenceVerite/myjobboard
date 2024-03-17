@@ -20,8 +20,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { login, AuthState } from "../../store/slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { enqueueNotification } from "../../store/slices/notificationSlice";
-import { NotificationSeverity } from "../../ValueObjects/Notification";
+import { NotificationSeverity } from "../../valueObjects/Notification";
 import LogoLong from "../common/LogoLong";
+
 const AuthForm = () => {
   const [credentials, setCredentials] = useState({
     mail: "",

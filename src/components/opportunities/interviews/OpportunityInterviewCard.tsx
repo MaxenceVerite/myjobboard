@@ -27,7 +27,7 @@ import { deleteInterview } from "../../../store/slices/opportunitySlice";
 import { getInterlocutors } from "../../../store/slices/interlocutorSlice";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
-import { EventNote } from "@mui/icons-material";
+import { EventNote, Person } from "@mui/icons-material";
 
 interface OpportunityInterviewCardProps {
   opportunityId: string;
@@ -42,18 +42,19 @@ const OpportunityInterviewCard: React.FC<OpportunityInterviewCardProps> = ({
 
   const { t } = useTranslation();
   const { openModal, closeModal } = useModal();
+  const navigate = useNavigate();
 
   const interlocutors = useSelector(
     (state: RootState) => state.interlocutors.interlocutors
   );
 
   useEffect(() => {
-    if (!interview?.interlocutorsId) return;
+    if (!interview?.interviewers) return;
 
-    if (interview.interlocutorsId.length === 0) {
+    if (interview.interviewers.length === 0) {
       dispatch(getInterlocutors());
     }
-  }, [dispatch, interview.interlocutorsId?.length]);
+  }, [dispatch, interview.interviewers?.length]);
 
   const handleDelete = async () => {
     openModal(
@@ -97,10 +98,10 @@ const OpportunityInterviewCard: React.FC<OpportunityInterviewCardProps> = ({
 
   const interviewTypeTitle = computeInterviewTypeTitle();
 
-  const interlocutorNames: string = interview.interlocutorsId
+  const interlocutorNames: string = interview.interviewers
     ? interlocutors
         .filter((interlocutor) =>
-          interview.interlocutorsId.includes(interlocutor.id!)
+          interview.interviewers.map((c) => c.id).includes(interlocutor.id!)
         )
         .map(
           (interlocutor) => `${interlocutor.firstName} ${interlocutor.lastName}`
@@ -110,6 +111,11 @@ const OpportunityInterviewCard: React.FC<OpportunityInterviewCardProps> = ({
 
   const multipleInterlocutors = interlocutorNames.split(", ").length > 1;
 
+  const handleInterviewersNavigation = ()=> {
+    var encodedIds = encodeURI(interview.interviewers.map(int => int.id).join(","))
+    navigate(`/interlocutors?id=${encodedIds}`)
+    
+  }
   return (
     <Card
       sx={(theme) => ({
@@ -171,19 +177,38 @@ const OpportunityInterviewCard: React.FC<OpportunityInterviewCardProps> = ({
           {t(`meetingConditions.${interview.meetingCondition}`)}
         </Typography>
 
-        {interview?.interlocutorsId && (
-          <Box sx={{ display: "flex", flexDirection: "column" }}>
+        { interview?.interviewers && interview?.interviewers.length > 0 && (
+          <Box
+            mt={3}
+            sx={(theme) => ({
+              display: "flex",
+              flexDirection: "row",
+              "&:hover": {
+                textDecoration: "underline",
+                textDecorationColor: theme.palette.secondary.main,
+                cursor: "pointer",
+              },
+            })}
+            onClick={(e)=> {e.stopPropagation(); handleInterviewersNavigation() } }
+          >
+            <Person color="secondary" fontSize={"small"} />
             {multipleInterlocutors ? (
               <Tooltip title={interlocutorNames}>
-                <Typography variant="body2">{`${
-                  interlocutorNames.split(", ")[0]
-                }, ...`}</Typography>
+                <Typography
+                  fontWeight={400}
+                  color="secondary.main"
+                  variant="body2"
+                >{`${interlocutorNames.split(", ")[0]}, ...`}</Typography>
               </Tooltip>
             ) : (
-              <Typography variant="body2">{interlocutorNames}</Typography>
+              <Typography color="secondary.main" variant="body2">
+                {interlocutorNames}
+              </Typography>
             )}
           </Box>
         )}
+
+        
       </CardContent>
       <Box
         sx={{

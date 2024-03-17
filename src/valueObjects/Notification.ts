@@ -1,4 +1,4 @@
-export interface Notification{
+interface Notification{
     key?: string,
     severity : NotificationSeverity,
     message: string,
@@ -6,9 +6,14 @@ export interface Notification{
 }
 
 
-export enum NotificationSeverity {
+enum NotificationSeverity {
     Success = "success",
     Warning = "warning" ,
     Error = "error"
+}
+
+export {
+    Notification, 
+    NotificationSeverity
 }
 

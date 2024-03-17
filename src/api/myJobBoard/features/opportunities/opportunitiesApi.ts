@@ -92,6 +92,29 @@ const deleteInterview = async(opportunityId: string, interviewId: string): Promi
     }
 }
 
+const updateOpportunityDocuments = async(opportunityId: string, documentsIds: string[]) => {
+    try{
+        var response = await myJobBoardApiClient.put(`/api/opportunities/${opportunityId}/documents`, documentsIds)
+        return response.data;
+        
+    }catch(error){
+        console.log("Impossible de mettre à jour les documents associés à l'opportunité : " + error)
+        throw error;
+    }
+}
+
+const updateOpportunityInterviewInterlocutors = async(opportunityId: string, interviewId:string, interlocutorsIds: string[]) => {
+    try{
+        var response = await myJobBoardApiClient.put(`/api/opportunities/${opportunityId}/interviews/${interviewId}/interlocutors`, interlocutorsIds)
+        return response.data;
+        
+    }catch(error){
+        console.log("Impossible de mettre à jour les interlocuteurs associés à l'entretien : " + error)
+        throw error;
+    }
+}
+
+
 export {
     getOpportunities,
     getOpportunity,
@@ -100,5 +123,7 @@ export {
     createOpportunity,
     createInterview,
     deleteInterview,
-    updateInterview
+    updateInterview,
+    updateOpportunityDocuments,
+    updateOpportunityInterviewInterlocutors
 }

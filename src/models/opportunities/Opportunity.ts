@@ -1,5 +1,6 @@
 import Interlocutor from "./Interlocutor"
 import Range from "../../valueObjects/Range"
+import { Document } from "../document"
 
 export interface IAnnotable{
     freeNotes?: string
@@ -16,11 +17,11 @@ export default interface Opportunity extends IAnnotable{
     startDate: Date,
     lastUpdateDate: Date,
     state: EOpportunityState,
-    relatedApplication?: Application, // pas de vie en dehors de l'entité, relation 1-1 avec opport
+    relatedApplication?: Application, 
     interviews?: Interview[], 
     offers?: Offer[]
     indicativeSalaryRange?: SalaryRange,
-    associatedDocumentsId?: string[],
+    documents?: OpportunityDocument[],
     userAppreciationLevel?: number,
     confidenceLevel?: number
 }
@@ -29,7 +30,7 @@ export default interface Opportunity extends IAnnotable{
 
 export interface Interview extends IAnnotable {
     id?: string,
-    interlocutorsId: string[],
+    interviewers: OpportunityInterviewInterlocutors[],
     type: InterviewType,
     customType?: string,
     dueDate: Date,
@@ -59,6 +60,13 @@ export interface SalaryRange extends Range{
     periodicity: Periodicity
 }
 
+export interface OpportunityDocument {
+    id: string
+}
+
+export interface OpportunityInterviewInterlocutors {
+    id: string
+}
 
 
 export enum EOpportunityState{

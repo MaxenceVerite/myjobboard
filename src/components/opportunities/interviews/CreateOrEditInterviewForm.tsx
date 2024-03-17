@@ -22,6 +22,7 @@ import { useDispatch } from "react-redux";
 import {
   createInterview,
   updateInterview,
+  updateOpportunityInterviewInterlocutors,
 } from "../../../store/slices/opportunitySlice";
 
 interface CreateOrEditInterviewFormProps {
@@ -46,22 +47,48 @@ const CreateOrEditInterviewForm = ({
       ? { ...interview }
       : {
           dueDate: new Date(),
-          interlocutorsId: [],
+          interviewers: [],
           type: InterviewType.HR,
           meetingCondition: MeetingConditions.Physical,
         }
   );
 
-  const handleSubmit = (e) => {
+  const [associatedInterlocutors, setAssociatedInterlocutors] = useState<
+    string[]
+  >(interview?.interviewers.map(c=> c.id) ?? []);
+
+ 
+  const  handleSubmit = async (e) => {
     e.preventDefault();
+
+    let interviewResultAction;
+
     if (!interview)
-      dispatch(
-        createInterview({ opportunityId: opportunityId, interview: _interview })
+    interviewResultAction = await dispatch(
+         createInterview({ opportunityId: opportunityId, interview: _interview })
       );
     else
-      dispatch(
+    interviewResultAction = await  dispatch(
         updateInterview({ opportunityId: opportunityId, interview: _interview })
       );
+
+      console.log(interviewResultAction)
+    if (
+      createInterview.fulfilled.match(interviewResultAction) ||
+      updateInterview.fulfilled.match(interviewResultAction)
+    ) {
+    
+      console.log(interviewResultAction.payload);
+      
+      await dispatch(
+        updateOpportunityInterviewInterlocutors({
+          opportunityId: opportunityId,
+          interviewId: interviewResultAction.payload.interview.id!, 
+          interlocutorsIds: associatedInterlocutors,
+        })
+      );
+    }
+
     onSubmit();
   };
 
@@ -71,8 +98,7 @@ const CreateOrEditInterviewForm = ({
   };
 
   const handleInterlocutorSelectionChange = (interlocutorIds: string[]) => {
-    const ids = interlocutorIds.map((id) => id);
-    setInterview((prev) => ({ ...prev, interlocutorsId: ids }));
+    setAssociatedInterlocutors(interlocutorIds);
   };
 
   return (
@@ -150,10 +176,11 @@ const CreateOrEditInterviewForm = ({
         />
 
         <InterlocutorsPicker
-          preselectedInterlocutors={_interview.interlocutorsId}
+          preselectedInterlocutors={associatedInterlocutors}
           onInterlocutorsSelectionChange={handleInterlocutorSelectionChange}
+          canCreate
         />
-       
+
         <TextareaAutosize
           minRows={3}
           placeholder="Notes ..."
@@ -168,12 +195,11 @@ const CreateOrEditInterviewForm = ({
             border: "0",
             boxShadow: "5px 10px 15px rgba(0,0,0,0.07)",
             outline: "none",
-            marginTop:"2%",
-            marginBottom:"2%"
+            marginTop: "2%",
+            marginBottom: "2%",
           }}
           value={_interview.freeNotes}
           onChange={handleInputChange}
-          
         />
 
         <Box>

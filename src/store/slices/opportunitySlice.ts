@@ -169,6 +169,65 @@ export const deleteInterview = createAsyncThunk(
   }
 );
 
+interface UpdateOpportunityDocumentsPayload {
+  opportunityId: string;
+  documentsIds: string[];
+}
+
+export const updateOpportunityDocuments = createAsyncThunk(
+  "opportunity/updateOpportunityDocuments",
+  async (payload: UpdateOpportunityDocumentsPayload, { rejectWithValue }) => {
+    try {
+      var data = await opportunityService.updateOpportunityDocuments(
+        payload.opportunityId,
+        payload.documentsIds
+      );
+
+      return {
+        opportunityId: payload.opportunityId,
+        documents: data,
+      };
+    } catch (error) {
+      return rejectWithValue(
+        "Erreur lors de la modification des documents associé à l'opportunité"
+      );
+    }
+  }
+);
+
+interface UpdateOpportunityInterviewInterlocutorsPayload {
+  opportunityId: string;
+  interviewId: string;
+  interlocutorsIds: string[];
+}
+
+export const updateOpportunityInterviewInterlocutors = createAsyncThunk(
+  "opportunity/updateOpportunityInterviewInterlocutors",
+  async (
+    payload: UpdateOpportunityInterviewInterlocutorsPayload,
+    { rejectWithValue }
+  ) => {
+    try {
+      var data =
+        await opportunityService.updateOpportunityInterviewInterlocutors(
+          payload.opportunityId,
+          payload.interviewId,
+          payload.interlocutorsIds
+        );
+
+      return {
+        opportunityId: payload.opportunityId,
+        interviewId: payload.interviewId,
+        interviewers: data,
+      };
+    } catch (error) {
+      return rejectWithValue(
+        "Erreur lors de la modification des interlocuteurs associé à l'entretien"
+      );
+    }
+  }
+);
+
 const opportunitySlice = createSlice({
   name: "opportunities",
   initialState,
@@ -288,10 +347,13 @@ const opportunitySlice = createSlice({
           (opportunity) => opportunity.id === opportunityId
         );
         if (opportunityIndex !== -1) {
-          state.opportunities[opportunityIndex].interviews = 
-            state.opportunities[opportunityIndex].interviews!.map((existingInterview) =>
-              existingInterview.id === interview.id ? interview : existingInterview
-          );
+          state.opportunities[opportunityIndex].interviews =
+            state.opportunities[opportunityIndex].interviews!.map(
+              (existingInterview) =>
+                existingInterview.id === interview.id
+                  ? interview
+                  : existingInterview
+            );
         }
         state.isLoading = false;
       })
@@ -302,18 +364,16 @@ const opportunitySlice = createSlice({
         state.isLoading = false;
         state.error = action.payload as string;
       })
-      
-      // Add this extra reducer for deleteInterview
       .addCase(deleteInterview.fulfilled, (state, action) => {
         const { interviewId, opportunityId } = action.payload;
         const opportunityIndex = state.opportunities.findIndex(
           (opportunity) => opportunity.id === opportunityId
         );
         if (opportunityIndex !== -1) {
-          state.opportunities[opportunityIndex].interviews = 
-            state.opportunities[opportunityIndex].interviews!.filter((existingInterview) =>
-              existingInterview.id !== interviewId
-          );
+          state.opportunities[opportunityIndex].interviews =
+            state.opportunities[opportunityIndex].interviews!.filter(
+              (existingInterview) => existingInterview.id !== interviewId
+            );
         }
         state.isLoading = false;
       })
@@ -324,6 +384,52 @@ const opportunitySlice = createSlice({
         state.isLoading = false;
         state.error = action.payload as string;
       })
+      .addCase(updateOpportunityDocuments.fulfilled, (state, action) => {
+        const { documents, opportunityId } = action.payload;
+        const opportunity = state.opportunities.find(
+          (opportunity) => opportunity.id === opportunityId
+        );
+        if (opportunity) {
+          opportunity.documents = documents;
+        }
+
+        state.isLoading = false;
+      })
+      .addCase(updateOpportunityDocuments.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateOpportunityDocuments.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(
+        updateOpportunityInterviewInterlocutors.fulfilled,
+        (state, action) => {
+          const { opportunityId, interviewId, interviewers } = action.payload;
+          const opportunity = state.opportunities.find(
+            (opportunity) => opportunity.id === opportunityId
+          );
+          if (opportunity) {
+            const interview = opportunity.interviews?.find(
+              (interview) => interview.id === interviewId
+            );
+            if (interview) {
+              interview.interviewers = interviewers;
+            }
+          }
+          state.isLoading = false;
+        }
+      )
+      .addCase(updateOpportunityInterviewInterlocutors.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(
+        updateOpportunityInterviewInterlocutors.rejected,
+        (state, action) => {
+          state.isLoading = false;
+          state.error = action.payload as string;
+        }
+      );
   },
 });
 

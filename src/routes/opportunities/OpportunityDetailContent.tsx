@@ -29,11 +29,12 @@ import { useDispatch } from "react-redux";
 import {
   getOpportunity,
   updateOpportunity,
+  updateOpportunityDocuments,
 } from "../../store/slices/opportunitySlice";
 import { useTranslation } from "react-i18next";
 import ApplicationContainer from "../../components/application/ApplicationContainer";
 import { fetchDocuments } from "../../store/slices/documentSlice";
-import FilterableSection from "../../components/common/FilterableSection";
+import ActionableSection from "../../components/common/ActionableSection";
 import ExpendableTextfield from "../../components/common/inputs/ExpendableTextfield";
 import DocumentCardList from "../../components/documents/DocumentCardList";
 import { useModal } from "../../contexts/ModalContext";
@@ -61,18 +62,11 @@ const OpportunityDetailContent = () => {
   );
 
   useEffect(() => {
-    if (opportunity?.associatedDocumentsId) {
+    if (opportunity?.documents) {
       dispatch(fetchDocuments());
     }
   }, [opportunity, dispatch]);
 
-  const opportunityDocuments = useSelector((state: RootState) =>
-    state.documents.documents.filter(
-      (doc) =>
-        opportunity?.associatedDocumentsId &&
-        opportunity.associatedDocumentsId.includes(doc.id)
-    )
-  );
 
   const activeStep = EOpportunityState.APPLIED;
 
@@ -83,15 +77,16 @@ const OpportunityDetailContent = () => {
     state.companies.companies.filter((c) => c.id == opportunity!.companyId)
   );
 
+  const opportunityDocuments = useSelector((state: RootState) => {
+    return state.documents.documents.filter(q => opportunity?.documents?.map(d => d.id).includes(q.id))
+  })
+
   const companyName = opportunityCompany?.name ?? "Enseigne";
 
   const handleJoinedDocumentsChange = (selectedDocumentIds: string[]) => {
-    const safeOpportunity = {
-      ...opportunity!,
-      associatedDocumentsId: selectedDocumentIds,
-    };
+   
 
-    dispatch(updateOpportunity({ opportunity: safeOpportunity }));
+    dispatch(updateOpportunityDocuments({opportunityId: opportunity?.id!, documentsIds: selectedDocumentIds }));
     closeModal();
   };
 
@@ -99,7 +94,7 @@ const OpportunityDetailContent = () => {
     openModal(
       "Selectionner un document",
       <DocumentPicker
-        preselectedDocumentIds={opportunity?.associatedDocumentsId}
+        preselectedDocumentIds={opportunity?.documents?.map(c => c.id)}
         multipleSelection
         notifyOnCommit
         onSelectionChange={handleJoinedDocumentsChange}
@@ -186,7 +181,7 @@ const OpportunityDetailContent = () => {
       <Box width="100%" mb={5}>
       <PhaseStepper currentPhase={opportunity.state} />
       </Box>
-      <FilterableSection sectionTitle="Notes" isExpanded>
+      <ActionableSection  sectionTitle="Notes" isExpanded>
         <TextareaAutosize
           minRows={6}
           style={{
@@ -198,12 +193,14 @@ const OpportunityDetailContent = () => {
             border: "0",
             boxShadow: "5px 10px 15px rgba(0,0,0,0.07)",
             outline: "none",
+            marginTop: "2%",
+            marginBottom: "2%"
           }}
           value={note}
           onChange={(e) => setNote(e.target.value)}
           onBlur={saveOpportunityNotes}
         />
-      </FilterableSection>
+      </ActionableSection>
 
       <DocumentCardList
         customAddDocument={handleJoinDocument}
@@ -218,7 +215,7 @@ const OpportunityDetailContent = () => {
         isExpanded
       />
 
-      <FilterableSection sectionTitle="Offres" isExpanded>
+      <ActionableSection sectionTitle="Offres" isExpanded>
         <TextareaAutosize
           minRows={6}
           style={{
@@ -232,7 +229,7 @@ const OpportunityDetailContent = () => {
             outline: "none",
           }}
         />
-      </FilterableSection>
+      </ActionableSection>
 
       <Grid md={1}></Grid>
       <Grid xs={12} md={4} mb="3%"></Grid>

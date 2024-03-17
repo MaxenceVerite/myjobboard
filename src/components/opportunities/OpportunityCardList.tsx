@@ -1,5 +1,5 @@
 import React from "react";
-import FilterableSection from "../common/FilterableSection";
+import ActionableSection from "../common/ActionableSection";
 import { Button, Card, Grid } from "@mui/material";
 import OpportunityCard from "./OpportunityCard";
 import { useModal } from "../../contexts/ModalContext";
@@ -27,12 +27,26 @@ const OpportunityCardList = ({
       <CreateOpportunityForm onSubmit={closeModal} onClose={closeModal} />
     );
   };
+
+  const handleFilter = () => {
+
+  };
+
+  const handleSearch = ()=> {
+
+  }
+
   if ((!opportunities || opportunities.length == 0) && !canAddOpportunity)
     return null;
 
   return (
-    <FilterableSection isExpanded={isExpanded} sectionTitle={title}>
-      <Grid paddingX={3} item xs={12}>
+    <ActionableSection
+    onAddElement={openOpportunityCreationModal}
+    onFilter={handleFilter}
+    onSearch={handleSearch}
+    isExpanded={isExpanded} 
+    sectionTitle={title}>
+      <Grid marginY={3} paddingX={3} item xs={12}>
         {opportunities.map((opp) => (
           <OpportunityCard opportunity={opp} />
         ))}
@@ -57,7 +71,7 @@ const OpportunityCardList = ({
           </Card>
         )}
       </Grid>
-    </FilterableSection>
+    </ActionableSection>
   );
 };
 

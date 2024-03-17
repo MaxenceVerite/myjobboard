@@ -1,6 +1,6 @@
 import React from "react";
 import { Interview } from "../../../models/opportunities/Opportunity";
-import FilterableSection from "../../common/FilterableSection";
+import ActionableSection from "../../common/ActionableSection";
 import { Button, Card, Grid, alpha } from "@mui/material";
 import OpportunityInterviewCard from "./OpportunityInterviewCard";
 import { useModal } from "../../../contexts/ModalContext";
@@ -25,9 +25,23 @@ const handleOpenCreateInterviewModal = () =>{
     
 }
 
+const handleSearchInterview = () =>{
+
+  
+}
+
+const handleFilterInterview = ()=> {
+
+}
 
   return (
-    <FilterableSection sectionTitle="Entretiens" isExpanded={isExpanded}>
+    <ActionableSection 
+    sectionTitle="Entretiens"
+    isExpanded={isExpanded}
+    onSearch={handleSearchInterview} 
+    onFilter={handleFilterInterview}
+    onAddElement={handleOpenCreateInterviewModal}
+    >
       <Grid container xs={12}>
         {interviews && 
         interviews.map((interview, index) => (
@@ -74,7 +88,7 @@ const handleOpenCreateInterviewModal = () =>{
           </Grid>
         )}
       </Grid>
-    </FilterableSection>
+    </ActionableSection>
   );
 };
 

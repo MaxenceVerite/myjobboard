@@ -20,12 +20,12 @@ import {
 } from "@mui/icons-material";
 import { useDispatch } from "react-redux";
 import { uploadDocument } from "../../store/slices/documentSlice";
-import FilterableSection from "../common/FilterableSection";
+import ActionableSection from "../common/ActionableSection";
 
 interface DocumentCardListProps {
   title: string;
   documentType?: DocumentType;
-  documents: Document[];
+  documents?: Document[];
   isExpanded?: boolean;
   customAddDocument?: () => void;
 }
@@ -57,10 +57,24 @@ const DocumentCardList = ({
     dispatch(uploadDocument({ file: file, type: documentType }));
   };
 
+  const handleFilter = ()=>{
+
+  }
+
+  const handleSearch = ()=>{
+
+  }
+
   return (
-    <FilterableSection sectionTitle={title} isExpanded={isExpanded}>
+    <ActionableSection
+      sectionTitle={title}
+      isExpanded={isExpanded}
+      onAddElement={handleAdd}
+      onFilter={handleFilter}
+      onSearch={handleSearch}
+    >
       <Grid container xs={12}>
-        {documents.map((doc, index) => (
+        {documents && documents.map((doc, index) => (
           <Grid key={index} item xs={6} md={2} marginY={4}>
             <DocumentCard doc={doc} showDelete showDownload />
           </Grid>
@@ -109,7 +123,7 @@ const DocumentCardList = ({
           </Grid>
         )}
       </Grid>
-    </FilterableSection>
+    </ActionableSection>
   );
 };
 
