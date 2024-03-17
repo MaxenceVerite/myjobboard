@@ -17,7 +17,7 @@ import { register } from "../../store/slices/authSlice";
 import { useDispatch } from "react-redux";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { enqueueNotification } from "../../store/slices/notificationSlice";
-import { NotificationSeverity } from "../../ValueObjects/Notification";
+import { NotificationSeverity } from "../../valueObjects/Notification";
 
 export default function RegisterForm() {
   const [email, setEmail] = useState("");
