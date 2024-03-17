@@ -1,4 +1,4 @@
-import myJobBoardApiClient from "../../apiclient"
+import myJobBoardApiClient from "../../apiClient"
 
 import Interlocutor from "../../../../models/opportunities/Interlocutor";
 

@@ -1,6 +1,6 @@
 import { STATUS_CODES } from "http";
 import Token from "../../../models/authentication/Token";
-import myJobBoardClient from "../apiclient";
+import myJobBoardClient from "../apiClient";
 import { setAccessToken, setRefreshToken } from "../tokenManager";
 
 const register = async (mail: string, password: string): Promise<void> => {

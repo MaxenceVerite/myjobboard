@@ -1,4 +1,4 @@
-import myJobBoardApiClient from "../../apiclient"
+import myJobBoardApiClient from "../../apiClient"
 import Opportunity, { Interview } from "../../../../models/opportunities/Opportunity"
 
 const opportunitiesRessourcePath = "api/opportunities"

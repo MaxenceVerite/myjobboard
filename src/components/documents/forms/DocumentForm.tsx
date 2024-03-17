@@ -62,7 +62,7 @@ const DocumentForm = ({ document, onSubmit }: DocumentFormProps) => {
       >
         {Object.values(DocumentType).map((type) => (
           <MenuItem key={type} value={type}>
-            {t(type)}
+            {t(`documentType.${type}`)}
           </MenuItem>
         ))}
       </TextField>

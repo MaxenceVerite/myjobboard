@@ -1,5 +1,5 @@
 import Company from "../../../../models/opportunities/Company";
-import myJobBoardApiClient from "../../apiclient";
+import myJobBoardApiClient from "../../apiClient";
 
 const companiesRessourcePath = "/api/companies";
 

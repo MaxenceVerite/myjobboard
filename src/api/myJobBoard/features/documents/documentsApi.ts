@@ -1,5 +1,5 @@
 import { DocumentType } from "../../../../models/document"
-import myJobBoardClient from "../../apiclient";
+import myJobBoardClient from "../../apiClient";
 import { Document } from "../../../../models/document";
 import FilterCriteriasBuilder, { FilterCriteriaOperator } from "../../utils/FilterCriteriasBuilder";
 
